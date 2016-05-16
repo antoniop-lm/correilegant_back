@@ -1,1 +1,3 @@
-# correilegant_back
+# correilegante
+
+a [Sails](http://sailsjs.org) application

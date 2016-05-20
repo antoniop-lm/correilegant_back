@@ -1,12 +1,12 @@
 /**
- * UsersController
+ * UserController
  *
- * @description :: Server-side logic for managing Users
+ * @description :: Server-side logic for managing User
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
 module.exports = {
-	new: function (req, res) {
+  new: function (req, res) {
     /*
       name
       username
@@ -14,15 +14,16 @@ module.exports = {
       password
       birthday
     */
-    var context = {};
 
+    var context = {};
     context.status = 'error';
 
     console.log(req.body);
+
     var data = (req.body.formdata) ? req.body.formdata : undefined;
     if (data) {
       try {
-        Users.create(data).exec(function createCB(err, created){
+        User.create(data).exec(function createCB(err, created){
           if(err) throw err;
           console.log('Created user with name ' + created.name);
         });

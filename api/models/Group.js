@@ -8,20 +8,19 @@
 module.exports = {
 
   attributes: {
-  	owner : {
-  		model: 'users',
-  		unique: true
-  	},
+    owner : {
+      model: 'user',
+      required: true
+    },
 
-  	name : {
-  		type: 'string',
-  		required: true
-  	},
+    name : {
+      type: 'string',
+      required: true
+    },
 
-  	users : {
-  		collection: 'users',
-  		via: 'groups'
-  	}
+    users : {
+      collection: 'user'
+    }
   }
 };
 

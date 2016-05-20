@@ -26,8 +26,9 @@ module.exports = {
         User.create(data).exec(function createCB(err, created){
           if(err) throw err;
           console.log('Created user with name ' + created.name);
+          context.status = 'success';
+          return res.json(context);
         });
-        context.status = 'success';
       } catch (err) {
         return res.json(context);
       }

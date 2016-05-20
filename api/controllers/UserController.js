@@ -57,9 +57,11 @@ module.exports = {
           User.findOne({where: {username: data.user}}).exec(function(err, result){
             if(err) throw err;
             result.follow.add(data.following);
-            result.save(function(err) {if(err) throw err;});
-            context.status = 'success';
-            return res.json(context);
+            result.save(function(err) {
+              if(err) throw err;
+              context.status = 'success';
+              return res.json(context);
+            });
           });
         });
       } catch (err) {return res.json(context);}
@@ -86,10 +88,34 @@ module.exports = {
           User.findOne({where: {username: data.user}}).exec(function(err, result){
             if(err) throw err;
             result.follow.remove(data.following);
-            result.save(function(err) {if(err) throw err;});
-            context.status = 'success';
-            return res.json(context);
+            result.save(function(err) {
+              if(err) throw err;
+              context.status = 'success';
+              return res.json(context);
+            });
           });
+        });
+      } catch (err) {return res.json(context);}
+    } else return res.json(context);
+  },
+
+  search: function(req,res) {
+    /*
+      user
+    */
+    var context = {};
+    context.status = "error";
+
+    console.log(req.body);
+
+    var data = (req.body.formdata) ? req.body.formdata : undefined;
+    if (data) {
+      try {
+        User.find({username: {contains: data.user}}).exec(function(err, result){
+          if(err) throw err;
+          context.result = result;
+          context.status = 'success';
+          return res.json(context);
         });
       } catch (err) {return res.json(context);}
     } else return res.json(context);

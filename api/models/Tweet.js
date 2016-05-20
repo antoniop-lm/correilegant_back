@@ -29,17 +29,15 @@ module.exports = {
       collection: 'reaction',
       via: 'tweet'
     }
+  },
 
-    // type : {
-    //   isShare: function (value) {
-    //     if(outro != null)
-    //       return true
-    //     else if (outro.title != null && outro.text != null)
-    //       return true
-    //     else
-    //       return false
-    //   }
-    // }
+  afterValidate: function (values, cb) {
+    if(values.outro != null)
+      cb();
+    else if (values.title != null && values.text != null)
+      cb();
+    else
+      cb("Não é tweet nem retweet.");
   }
 };
 

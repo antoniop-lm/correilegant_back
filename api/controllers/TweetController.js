@@ -11,8 +11,37 @@ module.exports = {
       user
       title
       text
-      timestamp
-      reactions
+    */
+
+    var context = {};
+    context.status = 'error';
+
+    console.log(req.body);
+
+    var data = (req.body.formdata) ? req.body.formdata : undefined;
+    if (data) {
+      try {
+        User.findOne({where: {username: data.user}}).exec(function(err, result){
+          if(err) throw err;
+          data.user = result.id;
+
+          Tweet.create(data).exec(function createCB(err, created){
+            if(err) throw err;
+            context.status = 'success';
+            return res.json(context);
+          });
+        });
+      } catch (err) {
+        return res.json(context);
+      }
+    }
+    else
+      return res.json(context);
+  },
+
+  retweet: function (req,res) {
+    /*
+      user
       outro
     */
 
@@ -40,6 +69,7 @@ module.exports = {
     }
     else
       return res.json(context);
+
   }
 };
 

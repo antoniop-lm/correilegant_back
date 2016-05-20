@@ -59,9 +59,11 @@
 	      				Group.findOne({where: {owner: data.owner, name: data.group}}).exec(function(err, result){
 	      					if(err) throw err;
 	      					result.users.add(data.user);
-	      					result.save(function(err) {if(err) throw err;});
-	      					context.status = 'success';
-	      					return res.json(context);
+	      					result.save(function(err) {
+	      						if(err) throw err;
+	      						context.status = 'success';
+	      						return res.json(context);
+	      					});
 	      				});
 	      			});
 	      		});
@@ -94,9 +96,11 @@
 	      				Group.findOne({where: {owner: data.owner, name: data.group}}).exec(function(err, result){
 	      					if(err) throw err;
 	      					result.users.remove(data.user);
-	      					result.save(function(err) {if(err) throw err;});
-	      					context.status = 'success';
-	      					return res.json(context);
+	      					result.save(function(err) {
+	      						if(err) throw err;
+	      						context.status = 'success';
+	      						return res.json(context);
+	      					});
 	      				});
 	      			});
 	      		});

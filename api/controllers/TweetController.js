@@ -38,6 +38,8 @@ module.exports = {
         return res.json(context);
       }
     }
+    else
+      return res.json(context);
   }
 };
 

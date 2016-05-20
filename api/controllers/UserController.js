@@ -28,9 +28,12 @@ module.exports = {
           console.log('Created user with name ' + created.name);
         });
         context.status = 'success';
-      } catch (err) {}
+      } catch (err) {
+        return res.json(context);
+      }
     }
-    return res.json(context);
+    else
+      return res.json(context);
   }
 };
 

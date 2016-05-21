@@ -26,7 +26,24 @@ module.exports.policies = {
   *                                                                          *
   ***************************************************************************/
 
-  // '*': true,
+  '*': true,
+
+  'GroupController': {
+    '*': 'isAuthenticated'
+  },
+
+  'ReactionController': {
+    '*': 'isAuthenticated'
+  },
+
+  'TweetController': {
+    '*': 'isAuthenticated'
+  },
+
+  'UserController': {
+    '*': 'isAuthenticated',
+    'new': true
+  },
 
   /***************************************************************************
   *                                                                          *

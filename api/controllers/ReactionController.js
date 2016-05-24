@@ -34,4 +34,3 @@ module.exports = {
     } else return res.json(context);
   }
 };
-

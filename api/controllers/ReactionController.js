@@ -20,7 +20,6 @@ module.exports = {
     if (data) {
       try {
         data.user = req.user.id;
-        //data.valor = parseInt(data.valor);
 
         Reaction.create(data).exec(function(err, created){
           if(err) throw err;

@@ -64,6 +64,45 @@ module.exports = {
     else
       return res.json(context);
 
+  },
+
+  updatetweet: function (req, res) {
+    /*
+      id
+      title
+      text
+    */
+
+    var context = {};
+    context.status = 'error';
+
+    console.log(req.body);
+
+    var data = (req.body.formdata) ? req.body.formdata : undefined;
+    if (data) {
+      try {
+        Tweet.findOne({where: {id: data.id}}).exec(function(err, result){
+          if(err) throw err;
+          if(result){
+            if(result.user == req.user.id){
+              Tweet.update(result.id, data).exec(function (err, updated){
+                if(err) throw err;
+                context.status = 'success';
+                return res.json(context);
+              });
+            }
+            else
+              return res.json(context);
+          }
+          else
+            return res.json(context);
+        });
+      } catch (err) {
+        return res.json(context);
+      }
+    }
+    else
+      return res.json(context);
   }
 };
 

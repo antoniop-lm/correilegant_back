@@ -119,6 +119,43 @@ module.exports = {
         });
       } catch (err) {return res.json(context);}
     } else return res.json(context);
+  },
+
+  updateusr: function (req, res) {
+    /*
+      name
+      username
+      description
+      password
+      birthday
+    */
+
+    var context = {};
+    context.status = 'error';
+
+    console.log(req.body);
+
+    var data = (req.body.formdata) ? req.body.formdata : undefined;
+    if (data) {
+      try {
+        User.findOne({where: {username: data.username}}).exec(function(err, result){
+          if(err) throw err;
+          if(result){
+            User.update(result.id, data).exec(function (err, updated){
+              if(err) throw err;
+              console.log('Updated user with name ' + updated.name);
+              context.status = 'success';
+              return res.json(context);
+            });
+          } 
+          else
+            return res.json(context);
+        });
+      } catch (err) {
+        return res.json(context);
+      }
+    }
+  
   }
 };
 

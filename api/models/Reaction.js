@@ -18,8 +18,8 @@ module.exports = {
       required: true
     },
 
-    value : {
-      type: 'int',
+    valor : {
+      type: 'integer',
       required: true
     }
   }

@@ -8,7 +8,6 @@
 module.exports = {
   new: function (req, res) {
     /*
-      user
       tweet
       value
     */
@@ -20,15 +19,13 @@ module.exports = {
     var data = (req.body.formdata) ? req.body.formdata : undefined;
     if (data) {
       try {
-        User.findOne({where: {username: data.user}}).exec(function(err, result){
-          if(err) throw err;
-          data.user = result.id;
+        data.user = req.user.id;
+        //data.valor = parseInt(data.valor);
 
-          Reaction.create(data).exec(function(err, created){
-            if(err) throw err;
-            context.status = 'success';
-            return res.json(context);
-          });
+        Reaction.create(data).exec(function(err, created){
+          if(err) throw err;
+          context.status = 'success';
+          return res.json(context);
         });
       } catch (err) {return res.json(context);}
     } else return res.json(context);

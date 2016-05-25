@@ -6,6 +6,12 @@
  */
 
 module.exports = {
+  eu: function (req, res) {
+    res.json({
+      user:req.user
+    });
+  },
+
   new: function (req, res) {
     /*
       name
@@ -39,7 +45,6 @@ module.exports = {
 
   follow: function (req, res) {
     /*
-      user
       following
     */
     var context = {};
@@ -54,14 +59,12 @@ module.exports = {
           if(err) throw err;
           data.following = result.id;
 
-          User.findOne({where: {username: data.user}}).exec(function(err, result){
+          result = req.user;
+          result.follow.add(data.following);
+          result.save(function(err) {
             if(err) throw err;
-            result.follow.add(data.following);
-            result.save(function(err) {
-              if(err) throw err;
-              context.status = 'success';
-              return res.json(context);
-            });
+            context.status = 'success';
+            return res.json(context);
           });
         });
       } catch (err) {return res.json(context);}
@@ -70,7 +73,6 @@ module.exports = {
 
   unfollow: function (req, res) {
     /*
-      user
       following
     */
     var context = {};
@@ -85,14 +87,12 @@ module.exports = {
           if(err) throw err;
           data.following = result.id;
 
-          User.findOne({where: {username: data.user}}).exec(function(err, result){
+          result = req.user;
+          result.follow.remove(data.following);
+          result.save(function(err) {
             if(err) throw err;
-            result.follow.remove(data.following);
-            result.save(function(err) {
-              if(err) throw err;
-              context.status = 'success';
-              return res.json(context);
-            });
+            context.status = 'success';
+            return res.json(context);
           });
         });
       } catch (err) {return res.json(context);}

@@ -18,7 +18,7 @@ module.exports = {
       required: true
     },
 
-    valor : {
+    rate : {
       type: 'integer',
       required: true
     }

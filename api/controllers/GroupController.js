@@ -98,6 +98,29 @@
 	      		});
 	      	} catch (err) {return res.json(context);}
 	    } else return res.json(context);
+  	},
+
+  	delete: function(req,res) {
+  		/*
+	      name
+	    */
+	    var context = {};
+	    context.status = 'error';
+
+	    console.log(req.body);
+
+	    var data = (req.body.formdata) ? req.body.formdata : undefined;
+	    if (data) {
+	      	try {
+      			data.owner = req.user.id;
+
+  				Group.destroy({where: {owner: data.owner, name: data.name}}).exec(function(err){
+  					if(err) throw err;
+					context.status = 'success';
+					return res.json(context);
+  				});
+	      	} catch (err) {return res.json(context);}
+	    } else return res.json(context);
   	}
 };
 

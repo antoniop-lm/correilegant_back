@@ -73,7 +73,7 @@ module.exports = {
 
   },
 
-  updatetweet: function (req, res) {
+  update_tweet: function (req, res) {
     /*
       id
       title
@@ -110,6 +110,69 @@ module.exports = {
     }
     else
       return res.json(context);
+  },
+
+  tag_search: function (req, res) {
+    /*
+      tag
+    */
+
+    var context = {};
+    context.status = 'error';
+
+    console.log(req.body);
+
+    var data = (req.body.formdata) ? req.body.formdata : undefined;
+    if (data) {
+      try {
+        Tweet.find({text: {contains: data.tag}}).exec(function(err, result){
+          if(err) throw err;
+          context.result = result;
+          context.status = 'success';
+          return res.json(context);
+        });
+      } catch (err) {
+        return res.json(context);
+      }
+    }
+    else
+      return res.json(context);
+  },
+
+  following_posts: function (req, res){
+    /* 
+      user
+    */
+
+    var context = {};
+    context.status = 'error';
+
+    console.log(req.body);
+
+    var data = (req.body.formdata) ? req.body.formdata : undefined;
+    if (data) {
+      try {
+        data.user = req.user.id;
+
+        User.findOne({where: {id: data.user}}).populate('follow').exec(function(err, result){
+          if(err) throw err;
+          var ids = [req.user.id];
+          for (var i in result.follow){
+            ids.push(result.follow[i].id);
+          }
+
+          Tweet.find({user: ids}).populate('user').sort('createdAt ASC').exec(function(err,result) {
+            if(err) throw err;
+            context.result = result;
+            context.status = 'success';
+            return res.json(context);
+          });
+        });
+      } catch (err) {
+        return res.json(context);
+      }
+    }
+    else
+      return res.json(context);
   }
 };
-

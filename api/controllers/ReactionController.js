@@ -9,7 +9,7 @@ module.exports = {
   new: function (req, res) {
     /*
       tweet
-      value
+      rate
     */
     var context = {};
     context.status = 'error';
@@ -28,5 +28,59 @@ module.exports = {
         });
       } catch (err) {return res.json(context);}
     } else return res.json(context);
-  }
+  },
+
+  update_reaction: function (req,res) {
+    /*
+      tweet
+      rate
+    */
+    var context = {};
+    context.status = 'error';
+
+    console.log(req.body);
+
+    var data = (req.body.formdata) ? req.body.formdata : undefined;
+    if (data) {
+      try {
+        data.user = req.user.id;
+
+        Reaction.findOne({where: {user: data.user, tweet: data.tweet}}).exec(function(err, result){
+          if(err) throw err;
+          if(result){
+            Reaction.update(result.id, data).exec(function (err, updated){
+              if(err) throw err;
+              context.status = 'success';
+              return res.json(context);
+            });
+          } 
+          else
+            return res.json(context);
+        });
+      } catch (err) {return res.json(context);}
+    } else return res.json(context);
+  },
+
+  delete_reaction: function (req,res) {
+    /*
+      tweet
+    */
+    var context = {};
+    context.status = 'error';
+
+    console.log(req.body);
+
+    var data = (req.body.formdata) ? req.body.formdata : undefined;
+    if (data) {
+      try {
+        data.user = req.user.id;
+
+        Reaction.destroy({where: {user: data.user, tweet: data.tweet}}).exec(function(err){
+          if(err) throw err;
+          context.status = 'success';
+          return res.json(context);
+        });
+      } catch (err) {return res.json(context);}
+    } else return res.json(context);
+  },
 };

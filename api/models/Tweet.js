@@ -38,6 +38,16 @@ module.exports = {
       cb();
     else
       cb("Não é tweet nem retweet.");
-  }
+  }//,
+
+  // toJSON: function () {
+  //   return{
+  //     title: this.title,
+  //     text: this.text,
+  //     outro: this.outro,
+  //     reaction_set: this.reaction_set,
+  //     user: 
+  //   }
+  // }
 };
 

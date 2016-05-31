@@ -24,6 +24,8 @@ module.exports = {
 
         Tweet.create(data).exec(function createCB(err, created){
           if(err) throw err;
+          context.post = created;
+          context.post.user = req.user;
           context.status = 'success';
           return res.json(context);
         });

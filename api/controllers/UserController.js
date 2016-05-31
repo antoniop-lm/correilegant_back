@@ -7,9 +7,35 @@
 
 module.exports = {
   eu: function (req, res) {
-    res.json({
-      user:req.user
-    });
+    var context = {};
+    context.status = 'error';
+
+    try{
+      User.findOne(req.user.id).populate("tweet_set").exec(function(err, found){
+        if(err) throw err;
+        context.user = found;
+        context.status = 'success';
+        res.json(context);
+      });
+    } catch(err){
+      res.json(context);
+    }
+  },
+
+  details: function (req, res) {
+    var context = {};
+    context.status = 'error';
+    try {
+      User.findOne({"username" : req.param("id")}).exec(function(err, found){
+        if (err) throw err;
+        context.user = found;
+        console.log(found);
+        context.status = 'success';
+        res.json(context);
+      });
+    } catch(err){
+      res.json(context);
+    }
   },
 
   new: function (req, res) {

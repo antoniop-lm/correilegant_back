@@ -156,7 +156,7 @@ module.exports = {
     } else return res.json(context);
   },
 
-  updateusr: function (req, res) {
+  update_user: function (req, res) {
     /*
       name
       username

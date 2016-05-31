@@ -9,7 +9,6 @@
 	new: function (req, res) {
 	    /*
 	      name
-	      users
 	    */
 	    var context = {};
 	    context.status = 'error';
@@ -45,18 +44,21 @@
 	      	try {
 	      		User.findOne({where: {username: data.user}}).exec(function(err, result){
 	      			if(err) throw err;
-	      			data.user = result.id;
-      				data.owner = req.user.id;
+	      			if(result){
+		      			data.user = result.id;
+		      			data.owner = req.user.id;
 
-      				Group.findOne({where: {owner: data.owner, name: data.group}}).exec(function(err, result){
-      					if(err) throw err;
-      					result.users.add(data.user);
-      					result.save(function(err) {
-      						if(err) throw err;
-      						context.status = 'success';
-      						return res.json(context);
-      					});
-	      			});	
+	      				Group.findOne({where: {owner: data.owner, name: data.group}}).exec(function(err, result){
+	      					if(err) throw err;
+	      					result.members.add(data.user);
+	      					result.save(function(err) {
+	      						if(err) throw err;
+	      						context.status = 'success';
+	      						return res.json(context);
+	      					});
+		      			});	
+		      		} else
+		      			return res.json(context);
 	      		});
 	    } catch (err) {return res.json(context);}
       } else return res.json(context);
@@ -77,19 +79,22 @@
 	      	try {
 	      		User.findOne({where: {username: data.user}}).exec(function(err, result){
 	      			if(err) throw err;
-	      			data.user = result.id;
+	      			if(result){
+		      			data.user = result.id;
 
-	      			data.owner = req.user.id;
+		      			data.owner = req.user.id;
 
-      				Group.findOne({where: {owner: data.owner, name: data.group}}).exec(function(err, result){
-      					if(err) throw err;
-      					result.users.remove(data.user);
-      					result.save(function(err) {
-      						if(err) throw err;
-      						context.status = 'success';
-      						return res.json(context);
-      					});
-      				});
+	      				Group.findOne({where: {owner: data.owner, name: data.group}}).exec(function(err, result){
+	      					if(err) throw err;
+	      					result.members.remove(data.user);
+	      					result.save(function(err) {
+	      						if(err) throw err;
+	      						context.status = 'success';
+	      						return res.json(context);
+	      					});
+	      				});
+	      			} else
+	      				return res.json(context);
 	      		});
 	      	} catch (err) {return res.json(context);}
 	    } else return res.json(context);

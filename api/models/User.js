@@ -1,3 +1,5 @@
+
+
 /**
  * User.js
  *
@@ -8,6 +10,7 @@
 module.exports = {
 
   attributes: {
+
     name : {
       type: 'string',
       required: true
@@ -21,26 +24,37 @@ module.exports = {
 
     description : {
       type: 'string',
-      required: true,
+      required: true
     },
 
     password : {
       type: 'string',
-      required: true,
+      required: true
     },
 
     birthday : {
       type: 'date',
-      required: true,
+      required: true
+    },
+
+    groups_owner:{
+      collection: 'group',
+      via: 'owner'
+    },
+
+    groups: {
+      collection: 'group',
+      via: 'members'
     },
 
     follow : {
-      collection: 'user'
+      collection: 'user',
+      via: 'follow_by'
     },
 
-    tweet_set: {
-      collection: 'tweet',
-      via: 'user'
+    follow_by:{
+      collection: 'user',
+      via: 'follow'
     },
 
     reaction_set: {
@@ -48,11 +62,16 @@ module.exports = {
       via: 'user'
     },
 
+    tweet_set: {
+      collection: 'tweet',
+      via: 'user'
+    },
+
     toJSON: function() {
       var obj = this.toObject();
       delete obj.password;
       return obj;
-    },
+    }
   },
 
   // beforeCreate: function(user, cb) {

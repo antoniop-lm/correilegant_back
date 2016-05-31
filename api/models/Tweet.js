@@ -10,7 +10,8 @@ module.exports = {
   attributes: {
     user : {
       model: 'user',
-      required: true
+      required: true,
+      notNull: true
     },
 
     title : {
@@ -18,21 +19,26 @@ module.exports = {
     },
 
     text : {
-      type: 'text',
+      type: 'text'
     },
 
-    outro : {
-      model: 'tweet'
-    },
-
-    reaction_set: {
+    reactions: {
       collection: 'reaction',
       via: 'tweet'
+    },
+
+//Se retweet for um valor "null", significa que é um tweet,
+//Se for um valor "tweet" ou "NotNull", ele é um retweet, 
+//Dessa forma um retweet pode encontrar o tweet que retuitou,
+//mas um tweet não pode encontrar seus retweets. 
+    retweet : {
+      model: 'tweet'
     }
+
   },
 
   afterValidate: function (values, cb) {
-    if(values.outro != null)
+    if(values.retweet != null)
       cb();
     else if (values.title != null && values.text != null)
       cb();

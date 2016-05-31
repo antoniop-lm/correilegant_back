@@ -18,8 +18,15 @@ module.exports = {
       required: true
     },
 
-    users : {
-      collection: 'user'
+    members : {
+      collection: 'user',
+      via: 'groups'
+    },
+
+    owner:{
+      model: 'user',
+      required: true,
+      notNull: true
     }
   }
 };

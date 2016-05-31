@@ -37,8 +37,7 @@ module.exports = {
 
   retweet: function (req,res) {
     /*
-      user
-      outro
+      retweet
     */
 
     var context = {};
@@ -50,13 +49,19 @@ module.exports = {
     if (data) {
       try {
         data.user = req.user.id;
-
-        Tweet.create(data).exec(function createCB(err, created){
+        Tweet.findOne({where: {id: data.retweet}}).exec(function(err, result){
           if(err) throw err;
-          context.status = 'success';
-          return res.json(context);
+          if(result){
+            data.retweet = result.id;
+            Tweet.create(data).exec(function createCB(err, created){
+              if(err) throw err;
+              context.status = 'success';
+              return res.json(context);
+            });
+          }else
+            return res.json(context);
+
         });
-       
       } catch (err) {
         return res.json(context);
       }

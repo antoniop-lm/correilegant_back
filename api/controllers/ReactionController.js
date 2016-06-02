@@ -6,7 +6,7 @@
  */
 
 module.exports = {
-  new: function (req, res) {
+  new_reaction: function (req, res) {
     /*
       tweet
       rate

@@ -6,7 +6,7 @@
  */
 
  module.exports = {
-	new: function (req, res) {
+	new_group: function (req, res) {
 	    /*
 	      name
 	    */
@@ -29,7 +29,7 @@
 	    } else return res.json(context);
   	},
 
-  	include: function (req, res) {
+  	include_member: function (req, res) {
   		/*
       	  group
       	  user
@@ -64,7 +64,7 @@
       } else return res.json(context);
   	},
 
-  	remove: function (req, res) {
+  	remove_member: function (req, res) {
 	  	/*
 	      group
 	      user
@@ -100,7 +100,7 @@
 	    } else return res.json(context);
   	},
 
-  	delete: function(req,res) {
+  	delete_group: function(req,res) {
   		/*
 	      name
 	    */

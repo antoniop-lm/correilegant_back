@@ -16,7 +16,10 @@ module.exports = {
   },
 
   login: function(req, res) {
-
+    /*
+      username
+      password
+    */
     passport.authenticate('local', function(err, user, info) {
       if (err || !user) {
         return res.send({

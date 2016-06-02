@@ -191,21 +191,23 @@ module.exports = {
       }
     }
   
-  }
+  },
 
   /*delete_user: function (req,res){
+    
     var context = {};
     context.status = 'error';
 
-    console.log(req.body);
+    console.log(req.user.id);
 
     var data = (req.body.formdata) ? req.body.formdata : undefined;
     if (data) {
       try {
         data.user = req.user.id;
-
+        req.logout();
         User.destroy({where: {id: data.user}}).exec(function(err){
           if(err) throw err;
+          //res.redirect('/');
           context.status = 'success';
           return res.json(context);
         });

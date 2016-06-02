@@ -19,12 +19,16 @@
 	    if (data) {
 	      	try {
 	      		data.owner = req.user.id;
-
       			Group.create(data).exec(function(err, created){
       				if(err) throw err;
-      				context.status = 'success';
-      				return res.json(context);
+      				created.members.add(data.owner);
+  					created.save(function(err) {
+  						if(err) throw err;
+  						context.status = 'success';
+  						return res.json(context);
+  					});
       			});
+
 	      	} catch (err) {return res.json(context);}
 	    } else return res.json(context);
   	},

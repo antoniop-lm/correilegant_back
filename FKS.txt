@@ -1,0 +1,17 @@
+ALTER TABLE user_follow_by__user_follow ADD CONSTRAINT user_follow_user_fkey FOREIGN KEY (user_follow) REFERENCES "user" (id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+ALTER TABLE user_follow_by__user_follow ADD CONSTRAINT user_follow_by_user_fkey FOREIGN KEY (user_follow_by) REFERENCES "user" (id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+ALTER TABLE tweet ADD CONSTRAINT tweet_user_fkey FOREIGN KEY ("user") REFERENCES "user" (id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+ALTER TABLE tweet ADD CONSTRAINT tweet_tweet_fkey FOREIGN KEY (retweet) REFERENCES "tweet" (id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+ALTER TABLE reaction ADD CONSTRAINT reaction_user_fkey FOREIGN KEY ("user") REFERENCES "user" (id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+ALTER TABLE reaction ADD CONSTRAINT reaction_tweet_fkey FOREIGN KEY (tweet) REFERENCES "tweet" (id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+ALTER TABLE "group" ADD CONSTRAINT group_user_fkey FOREIGN KEY (owner) REFERENCES "user" (id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+ALTER TABLE group_members__user_groups ADD CONSTRAINT group_members_group_fkey FOREIGN KEY (group_members) REFERENCES "group" (id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+ALTER TABLE group_members__user_groups ADD CONSTRAINT group_members_user_fkey FOREIGN KEY (user_groups) REFERENCES "user" (id) ON UPDATE CASCADE ON DELETE CASCADE;

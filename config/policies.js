@@ -42,7 +42,7 @@ module.exports.policies = {
 
   'UserController': {
     '*': 'isAuthenticated',
-    'new': true
+    'new_user': true
   },
 
   /***************************************************************************

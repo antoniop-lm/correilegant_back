@@ -6,7 +6,7 @@
  */
 
 module.exports = {
-  new: function (req, res) {
+  new_tweet: function (req, res) {
     /*
       title
       text
@@ -174,5 +174,63 @@ module.exports = {
     }
     else
       return res.json(context);
+  },
+
+  my_tweets: function (req, res){
+    /* 
+      user
+    */
+
+    var context = {};
+    context.status = 'error';
+
+    console.log(req.body);
+
+    var data = (req.body.formdata) ? req.body.formdata : undefined;
+    if (data) {
+      try {
+        data.user = req.user.id;
+
+        Tweet.find({user: data.user}).populate('user').sort('createdAt ASC').exec(function(err,result) {
+          if(err) throw err;
+          context.result = result;
+          context.status = 'success';
+          return res.json(context);
+        });
+      } catch (err) {
+        return res.json(context);
+      }
+    }
+    else
+      return res.json(context);
   }
+
+  /*delete_tweet: function (req,res){
+    var context = {};
+    context.status = 'error';
+
+    console.log(req.body);
+
+    var data = (req.body.formdata) ? req.body.formdata : undefined;
+    if (data) {
+      try {
+        Tweet.findOne({where: {id: data.id}}).exec(function(err, result){
+          if(err) throw err;
+          if(result){
+            if(result.user == req.user.id){
+              Tweet.destroy({where: {id: result.id}}).exec(function (err){
+                if(err) throw err;
+                context.status = 'success';
+                return res.json(context);
+              });
+            }
+            else
+              return res.json(context);
+          }
+          else
+            return res.json(context);
+        });
+      } catch (err) {return res.json(context);}
+    } else return res.json(context);
+  }*/
 };

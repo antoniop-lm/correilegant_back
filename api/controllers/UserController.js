@@ -38,7 +38,7 @@ module.exports = {
     }
   },
 
-  new: function (req, res) {
+  new_user: function (req, res) {
     /*
       name
       username
@@ -131,7 +131,7 @@ module.exports = {
     } else return res.json(context);
   },
 
-  search: function(req,res) {
+  search_user: function(req,res) {
     /*
       user
     */
@@ -192,5 +192,25 @@ module.exports = {
     }
   
   }
+
+  /*delete_user: function (req,res){
+    var context = {};
+    context.status = 'error';
+
+    console.log(req.body);
+
+    var data = (req.body.formdata) ? req.body.formdata : undefined;
+    if (data) {
+      try {
+        data.user = req.user.id;
+
+        User.destroy({where: {id: data.user}}).exec(function(err){
+          if(err) throw err;
+          context.status = 'success';
+          return res.json(context);
+        });
+      } catch (err) {return res.json(context);}
+    } else return res.json(context);
+  }*/
 };
 

@@ -38,6 +38,40 @@ module.exports = {
     }
   },
 
+  am_i_following: function (req, res) {
+    var context = {};
+    context.status = 'error';
+    var data = (req.body.formdata) ? req.body.formdata : undefined;
+
+          console.log(data);
+    if(data){
+      try {
+        User.findOne(req.user.id).populate("follow").exec(function(err, found){
+          if (err) throw err;
+          data.requester = found;
+
+          User.findOne({"username" : data.user}).exec(function(err, found){
+            if (err) throw err;
+            var id_list = [];
+            for (var i in data.requester.follow){
+              id_list.push(data.requester.follow[i].id);
+            }
+            console.log(id_list.indexOf(found.id));
+            context.following = id_list.indexOf(found.id) != -1;
+            context.status = 'success';
+            res.json(context);
+          });
+
+        });
+
+      } catch(err){
+        res.json(context);
+      }
+    } else {
+      res.json(context);
+    }
+  },
+
   new_user: function (req, res) {
     /*
       name
@@ -55,6 +89,7 @@ module.exports = {
     var data = (req.body.formdata) ? req.body.formdata : undefined;
     if (data) {
       try {
+        data.birthday = new Date(data.birthday);
         User.create(data).exec(function createCB(err, created){
           if(err) throw err;
           console.log('Created user with name ' + created.name);
@@ -77,27 +112,36 @@ module.exports = {
     context.status = 'error';
 
     console.log(req.body);
+    console.log(req.body.formdata);
 
     var data = (req.body.formdata) ? req.body.formdata : undefined;
+    console.log("data");
+    console.log(data);
     if (data) {
       try {
-        User.findOne({where: {username: data.following}}).exec(function(err, result){
+        User.findOne({where: {username: data.user}}).exec(function(err, result){
           if(err) throw err;
+          console.log("result");
+          console.log(result);
           if(result){
-            data.following = result.id;
+            data.following = result;
 
-            result = req.user;
-            result.follow.add(data.following);
-            result.save(function(err) {
+            requester = req.user;
+            console.log("requester");
+            console.log(requester);
+            requester.follow.add(data.following.id);
+            console.log("requester.follow");
+            console.log(requester.follow);
+            requester.save(function(err, result) {
               if(err) throw err;
               context.status = 'success';
-              return res.json(context);
+              res.json(context);
             });
           } else
-            return res.json(context);
+            res.json(context);
         });
-      } catch (err) {return res.json(context);}
-    } else return res.json(context);
+      } catch (err) {res.json(context);}
+    } else res.json(context);
   },
 
   unfollow: function (req, res) {
@@ -108,28 +152,68 @@ module.exports = {
     context.status = 'error';
 
     console.log(req.body);
+    console.log(req.body.formdata);
 
     var data = (req.body.formdata) ? req.body.formdata : undefined;
+    console.log("data");
+    console.log(data);
     if (data) {
       try {
-        User.findOne({where: {username: data.following}}).exec(function(err, result){
+        User.findOne({where: {username: data.user}}).exec(function(err, result){
           if(err) throw err;
+          console.log("result");
+          console.log(result);
           if(result){
-            data.following = result.id;
+            data.following = result;
 
-            result = req.user;
-            result.follow.remove(data.following);
-            result.save(function(err) {
+            requester = req.user;
+            console.log("requester");
+            console.log(requester);
+            requester.follow.remove(data.following.id);
+            console.log("requester.follow");
+            console.log(requester.follow);
+            requester.save(function(err, result) {
               if(err) throw err;
               context.status = 'success';
-              return res.json(context);
+              res.json(context);
             });
           } else
-            return res.json(context); 
+            res.json(context);
         });
-      } catch (err) {return res.json(context);}
-    } else return res.json(context);
+      } catch (err) {res.json(context);}
+    } else res.json(context);
   },
+
+  // unfollow: function (req, res) {
+  //   /*
+  //     following
+  //   */
+  //   var context = {};
+  //   context.status = 'error';
+
+  //   console.log(req.body);
+
+  //   var data = (req.body.formdata) ? req.body.formdata : undefined;
+  //   if (data) {
+  //     try {
+  //       User.findOne({where: {username: data.following}}).exec(function(err, result){
+  //         if(err) throw err;
+  //         if(result){
+  //           data.following = result.id;
+
+  //           result = req.user;
+  //           result.follow.remove(data.following);
+  //           result.save(function(err, res) {
+  //             if(err) throw err;
+  //             context.status = 'success';
+  //             return res.json(context);
+  //           });
+  //         } else
+  //           return res.json(context); 
+  //       });
+  //     } catch (err) {return res.json(context);}
+  //   } else return res.json(context);
+  // },
 
   search_user: function(req,res) {
     /*

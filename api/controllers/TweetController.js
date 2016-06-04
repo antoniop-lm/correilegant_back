@@ -140,47 +140,33 @@ module.exports = {
   },
 
   following_posts: function (req, res){
-    /* 
-      user
-    */
-
     var context = {};
     context.status = 'error';
 
-    console.log(req.body);
+    try {
+      data = {};
+      data.user = req.user.id;
 
-    var data = (req.body.formdata) ? req.body.formdata : undefined;
-    if (data) {
-      try {
-        data.user = req.user.id;
+      User.findOne({where: {id: data.user}}).populate('follow').exec(function(err, result){
+        if(err) throw err;
+        var ids = [req.user.id];
+        for (var i in result.follow){
+          ids.push(result.follow[i].id);
+        }
 
-        User.findOne({where: {id: data.user}}).populate('follow').exec(function(err, result){
+        Tweet.find({user: ids}).populate('user').sort('createdAt DESC').exec(function(err,result) {
           if(err) throw err;
-          var ids = [req.user.id];
-          for (var i in result.follow){
-            ids.push(result.follow[i].id);
-          }
-
-          Tweet.find({user: ids}).populate('user').sort('createdAt ASC').exec(function(err,result) {
-            if(err) throw err;
-            context.result = result;
-            context.status = 'success';
-            return res.json(context);
-          });
+          context.result = result;
+          context.status = 'success';
+          return res.json(context);
         });
-      } catch (err) {
-        return res.json(context);
-      }
-    }
-    else
+      });
+    } catch (err) {
       return res.json(context);
+    }
   },
 
   my_tweets: function (req, res){
-    /* 
-      user
-    */
-
     var context = {};
     context.status = 'error';
 
@@ -197,6 +183,38 @@ module.exports = {
           context.status = 'success';
           return res.json(context);
         });
+      } catch (err) {
+        return res.json(context);
+      }
+    }
+    else
+      return res.json(context);
+  },
+  tweets_from_user: function (req, res){
+    /* 
+      user
+    */
+    var context = {};
+    context.status = 'error';
+
+    //console.log(req.body);
+
+    var data = (req.body) ? req.body : undefined;
+    console.log(data);
+    if (data) {
+      try {
+        User.findOne({"username": data.user}).exec(function(err, result){
+          console.log("aqui");
+          if(err) throw err;
+          console.log(result);
+          Tweet.find({user: result.id}).populate('user').sort('createdAt ASC').exec(function(err,result) {
+            if(err) throw err;
+            context.result = result;
+            context.status = 'success';
+            return res.json(context);
+          });
+        });
+        
       } catch (err) {
         return res.json(context);
       }

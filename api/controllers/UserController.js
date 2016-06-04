@@ -255,17 +255,70 @@ module.exports = {
     console.log(req.body);
 
     var data = (req.body.formdata) ? req.body.formdata : undefined;
+    console.log("to aqui");
+    console.log(data);
     if (data) {
+      var newData = {};
+      newData.username = data.username;
+      newData.name = data.name;
+      newData.birthday = data.birthday;
+      newData.description = data.description;
+      
       try {
-        User.findOne({where: {username: data.username}}).exec(function(err, result){
+        User.findOne(req.user.id).exec(function(err, result){
+          console.log(result);
           if(err) throw err;
           if(result){
-            User.update(result.id, data).exec(function (err, updated){
+            User.update({id: req.user.id}, newData).exec(function (err, updated){
               if(err) throw err;
-              console.log('Updated user with name ' + updated.name);
               context.status = 'success';
               return res.json(context);
             });
+          } 
+          else
+            return res.json(context);
+        });
+      } catch (err) {
+        return res.json(context);
+      }
+    }
+  
+  },
+
+  update_user_password: function (req, res) {
+    /*
+      password
+      newpassword
+    */
+
+    var context = {};
+    context.status = 'error';
+
+    console.log(req.body);
+
+    var data = (req.body.formdata) ? req.body.formdata : undefined;
+    console.log("to aqui dentro");
+    console.log(data);
+    if (data) {
+      var newData = {};
+      newData.password = data.newpassword;
+      
+      try {
+        console.log("req user id "+ req.user.id);
+        User.findOne(req.user.id).exec(function(err, result){
+          console.log(result);
+          if(err) throw err;
+          if(result){
+            if (result.password == data.password){
+              User.update({id: req.user.id}, newData).exec(function (err, updated){
+                if(err) throw err;
+                context.status = 'success';
+                return res.json(context);
+              });
+            } else {
+              context.status = 'notpassword';
+              return res.json(context);
+            }
           } 
           else
             return res.json(context);

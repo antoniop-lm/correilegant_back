@@ -21,10 +21,22 @@ module.exports = {
       try {
         data.user = req.user.id;
 
-        Reaction.create(data).exec(function(err, created){
+        Tweet.findOne({id: data.tweet}).exec(function(err, result_tweet){
           if(err) throw err;
-          context.status = 'success';
-          return res.json(context);
+          if(result_tweet){
+            Reaction.findOne({tweet: result_tweet.id, user: data.user}).exec(function(err, result_reaction){
+              //console.log(result_reaction);
+              if(result_reaction != null) {
+                return res.json(context);
+              } else { 
+                Reaction.create(data).exec(function(err, created){
+                  if(err) throw err;
+                  context.status = 'success';
+                  return res.json(context);
+                });
+              }
+            });
+          }
         });
       } catch (err) {return res.json(context);}
     } else return res.json(context);

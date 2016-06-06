@@ -225,9 +225,12 @@ module.exports = {
     }
     else
       return res.json(context);
-  }
+  },
 
-  /*delete_tweet: function (req,res){
+  delete_tweet: function (req,res){
+    /*
+      id
+    */
     var context = {};
     context.status = 'error';
 
@@ -254,5 +257,5 @@ module.exports = {
         });
       } catch (err) {return res.json(context);}
     } else return res.json(context);
-  }*/
+  }
 };

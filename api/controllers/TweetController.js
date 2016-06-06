@@ -86,13 +86,17 @@ module.exports = {
     console.log(req.body);
 
     var data = (req.body.formdata) ? req.body.formdata : undefined;
+    console.log(data);
     if (data) {
+      newData = {};
+      newData.title = data.title;
+      newData.text = data.text;
       try {
         Tweet.findOne({where: {id: data.id}}).exec(function(err, result){
           if(err) throw err;
           if(result){
             if(result.user == req.user.id){
-              Tweet.update(result.id, data).exec(function (err, updated){
+              Tweet.update(result.id, newData).exec(function (err, updated){
                 if(err) throw err;
                 context.status = 'success';
                 return res.json(context);
@@ -154,7 +158,7 @@ module.exports = {
           ids.push(result.follow[i].id);
         }
 
-        Tweet.find({user: ids}).populate('user').sort('createdAt DESC').exec(function(err,result) {
+        Tweet.find({user: ids}).populate('user').populate('retweet').sort('createdAt DESC').exec(function(err,result) {
           if(err) throw err;
           context.result = result;
           context.status = 'success';
@@ -177,7 +181,7 @@ module.exports = {
       try {
         data.user = req.user.id;
 
-        Tweet.find({user: data.user}).populate('user').sort('createdAt ASC').exec(function(err,result) {
+        Tweet.find({user: data.user}).populate('user').populate('retweet').sort('createdAt ASC').exec(function(err,result) {
           if(err) throw err;
           context.result = result;
           context.status = 'success';
@@ -207,7 +211,7 @@ module.exports = {
           console.log("aqui");
           if(err) throw err;
           console.log(result);
-          Tweet.find({user: result.id}).populate('user').sort('createdAt ASC').exec(function(err,result) {
+          Tweet.find({user: result.id}).populate('user').populate('retweet').sort('createdAt ASC').exec(function(err,result) {
             if(err) throw err;
             context.result = result;
             context.status = 'success';

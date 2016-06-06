@@ -61,6 +61,30 @@ module.exports = {
     } else return res.json(context);
   },
 
+  my_reaction: function (req,res) {
+    /*
+      tweet
+      user
+    */
+    var context = {};
+    context.status = 'error';
+
+    console.log(req.body);
+
+    var data = (req.body) ? req.body : undefined;
+    if (data) {
+      try {
+        data.user = req.user.id;
+
+        Reaction.findOne({where: {user: data.user, tweet: data.tweet}}).exec(function(err, result){
+          if(err) throw err;
+            context.status = 'success';
+            return res.json(context);
+        });
+      } catch (err) {return res.json(context);}
+    } else return res.json(context);
+  },
+
   delete_reaction: function (req,res) {
     /*
       tweet

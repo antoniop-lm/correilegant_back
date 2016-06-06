@@ -61,7 +61,7 @@ module.exports = {
     } else return res.json(context);
   },
 
-  my_reaction: function (req,res) {
+  my_reaction: function (req, res) {
     /*
       tweet
       user
@@ -69,14 +69,14 @@ module.exports = {
     var context = {};
     context.status = 'error';
 
-    console.log(req.body);
-
-    var data = (req.body) ? req.body : undefined;
+    var data = (req.params) ? req.params : undefined;
     if (data) {
       try {
         data.user = req.user.id;
 
-        Reaction.findOne({where: {user: data.user, tweet: data.tweet}}).exec(function(err, result){
+        Reaction.findOne({where: {user: data.user, tweet: data.id}}).exec(function(err, found){
+          context.found = found;
+          console.log(found);
           if(err) throw err;
             context.status = 'success';
             return res.json(context);

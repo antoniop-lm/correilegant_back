@@ -106,7 +106,7 @@ module.exports = {
 
   follow: function (req, res) {
     /*
-      following
+      user
     */
     var context = {};
     context.status = 'error';
@@ -146,7 +146,7 @@ module.exports = {
 
   unfollow: function (req, res) {
     /*
-      following
+      user
     */
     var context = {};
     context.status = 'error';
@@ -330,7 +330,7 @@ module.exports = {
   
   },
 
-  /*delete_user: function (req,res){
+  delete_user: function (req,res){
     
     var context = {};
     context.status = 'error';
@@ -341,6 +341,7 @@ module.exports = {
     if (data) {
       try {
         data.user = req.user.id;
+
         req.logout();
         User.destroy({where: {id: data.user}}).exec(function(err){
           if(err) throw err;
@@ -350,6 +351,6 @@ module.exports = {
         });
       } catch (err) {return res.json(context);}
     } else return res.json(context);
-  }*/
+  }
 };
 

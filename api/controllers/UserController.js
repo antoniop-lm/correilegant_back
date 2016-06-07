@@ -345,7 +345,6 @@ module.exports = {
         req.logout();
         User.destroy({where: {id: data.user}}).exec(function(err){
           if(err) throw err;
-          //res.redirect('/');
           context.status = 'success';
           return res.json(context);
         });

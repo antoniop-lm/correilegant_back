@@ -40,6 +40,9 @@ module.exports.routes = {
 
   '/logout': 'AuthController.logout',
 
+  'post /uploaddb': 'UploadDownloadController.uploaddb',
+  '/downloaddb': 'UploadDownloadController.downloadDB',
+
   /***************************************************************************
   *                                                                          *
   * Custom routes here...                                                    *

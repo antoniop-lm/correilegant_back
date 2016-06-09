@@ -29,7 +29,7 @@ module.exports = {
       User.findOne({"username" : req.param("id")}).exec(function(err, found){
         if (err) throw err;
         context.user = found;
-        console.log(found);
+        //console.log(found);
         context.status = 'success';
         res.json(context);
       });
@@ -222,12 +222,9 @@ module.exports = {
     var context = {};
     context.status = "error";
 
-    console.log(req.body);
-
-    var data = (req.body.formdata) ? req.body.formdata : undefined;
-    if (data) {
+    
       try {
-        User.find({username: {contains: data.user}}).exec(function(err, result){
+        User.find({username: {contains: req.param("id")}}).exec(function(err, result){
           if(err) throw err;
           if(result){
             context.result = result;
@@ -237,7 +234,6 @@ module.exports = {
             return res.json(context);
         });
       } catch (err) {return res.json(context);}
-    } else return res.json(context);
   },
 
   update_user: function (req, res) {
@@ -348,6 +344,40 @@ module.exports = {
           context.status = 'success';
           return res.json(context);
         });
+      } catch (err) {return res.json(context);}
+    } else return res.json(context);
+  },
+
+  user_top20: function (req,res){
+    /*
+      id
+    */
+    var context = {};
+    context.status = 'error';
+
+    //console.log(req.body);
+
+    var data = req.param("id") ? req.param("id") : undefined;
+    if (data) {
+      try {
+        //aqui vai a pesquisa, date está dentro de data separada por --
+      } catch (err) {return res.json(context);}
+    } else return res.json(context);
+  },
+
+  user_similarity10: function (req,res){
+    /*
+      id
+    */
+    var context = {};
+    context.status = 'error';
+
+    //console.log(req.body);
+
+    var data = req.param("id") ? req.param("id") : undefined;
+    if (data) {
+      try {
+        //aqui vai a pesquisa, username está dentro de data
       } catch (err) {return res.json(context);}
     } else return res.json(context);
   }

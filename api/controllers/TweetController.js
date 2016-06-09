@@ -123,13 +123,9 @@ module.exports = {
 
     var context = {};
     context.status = 'error';
-
-    console.log(req.body);
-
-    var data = (req.body.formdata) ? req.body.formdata : undefined;
-    if (data) {
+    
       try {
-        Tweet.find({text: {contains: data.tag}}).exec(function(err, result){
+        Tweet.find({text: {contains: req.param("id")}}).exec(function(err, result){
           if(err) throw err;
           context.result = result;
           context.status = 'success';
@@ -138,9 +134,7 @@ module.exports = {
       } catch (err) {
         return res.json(context);
       }
-    }
-    else
-      return res.json(context);
+   
   },
 
   following_posts: function (req, res){
@@ -255,6 +249,23 @@ module.exports = {
           else
             return res.json(context);
         });
+      } catch (err) {return res.json(context);}
+    } else return res.json(context);
+  },
+
+  tweet_top20: function (req,res){
+    /*
+      id
+    */
+    var context = {};
+    context.status = 'error';
+
+    //console.log(req.body);
+
+    var data = req.param("id") ? req.param("id") : undefined;
+    if (data) {
+      try {
+        //aqui vai a pesquisa, date está dentro de data separada por --
       } catch (err) {return res.json(context);}
     } else return res.json(context);
   }

@@ -25,9 +25,13 @@ module.exports = {
     },
 
     toJSON_group: function () {
+      var list_members = [];
+      for(var i = 0; i < this.members.length; i++){
+        list_members.push(this.members[i].id);
+      }
       return{
         "nome": this.name,
-        "users": this.members,
+        "users": list_members,
         "relativeId": this.id
       }
     }

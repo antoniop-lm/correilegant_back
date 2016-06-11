@@ -348,6 +348,7 @@ module.exports = {
     } else return res.json(context);
   },
 
+  //influence= (número total de tweets * 2) + (número total de republicações * 2) + número total de likes - número total de dislikes
   user_top20: function (req, res) {
     /*
       

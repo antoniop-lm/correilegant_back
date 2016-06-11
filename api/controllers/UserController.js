@@ -348,21 +348,99 @@ module.exports = {
     } else return res.json(context);
   },
 
-  user_top20: function (req,res){
+  //influence= (número total de tweets * 2) + (número total de republicações * 2) + número total de likes - número total de dislikes
+  user_top20: function (req, res) {
     /*
-      id
+      
     */
     var context = {};
     context.status = 'error';
+    var actual_user = -1;
 
-    //console.log(req.body);
+    var initialize_values = function (users) {
+      for(var i = 0; i < users.length; i++){
+        users[i].number_tweets = 0;
+        users[i].number_reactions = 0;
+        users[i].number_retweets = 0;
+      }
+      return users;
+    }
 
-    var data = req.param("id") ? req.param("id") : undefined;
+    var find_user = function(array, value){
+      for(var i = 0; i < array.length; i++) {
+        if(array[i].id == value) {
+            return i;
+        }
+      }
+    }
+
+    var reaction_sum = function (tweet_set) {
+      var sum = 0;
+      if(tweet_set.reactions){
+        for (var j = 0; j < tweet_set.reactions.length; j++){
+          if (tweet_set.reactions[j].rate == 1){ 
+            sum++;
+          } else {
+            sum--;
+          }
+        }
+      }    
+      return sum;
+    }
+
+    var sum_retweets = function (tweet_set, index) {
+      var tweet_id = tweet_set[index].id;
+      var sum = 0;
+      for (var i = 0; i < tweet_set.length; i++){
+        if(tweet_set[i].retweet == tweet_id){
+          sum++;
+        }
+      }
+      return sum;
+    }
+
+    var data = (req.body.formdata) ? req.body.formdata : undefined;
     if (data) {
       try {
-        //aqui vai a pesquisa, date está dentro de data separada por --
-      } catch (err) {return res.json(context);}
-    } else return res.json(context);
+        data.user = req.user.id;
+        User.find().exec(function(err, users){
+          if(err) throw err;
+          if(users){
+            //console.log(users);
+            Tweet.find().populate("reactions").exec(function(err, tweet_set){
+              if(err) throw err;
+              if(tweet_set){
+                users = initialize_values(users);
+                for(var i = 0; i < tweet_set.length; i++){
+                  if (!tweet_set[i].retweet){
+                    var user_pos = find_user(users, tweet_set[i].user);
+                    users[user_pos].number_tweets++;
+                    users[user_pos].number_retweets += sum_retweets(tweet_set, i);
+                    users[user_pos].number_reactions += reaction_sum(tweet_set[i]);
+                  }
+                }
+                for(var i = 0; i < users.length; i++){
+                  users[i].influence = ((users[i].number_tweets *2) + (users[i].number_retweets*2) + users[i].number_reactions); 
+                }
+
+                context.response = users.sort(function(a,b){
+                  return b.influence-a.influence;
+                }).slice(0, 20);
+
+                console.log(context.response);
+                context.status = 'success';
+                return res.json(context);
+              }
+            });
+          }else
+            return res.json(context);
+        });
+      } catch (err) {
+        return res.json(context);
+      }
+    }
+    else
+      return res.json(context);
   },
 
   user_similarity10: function (req,res){

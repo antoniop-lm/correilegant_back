@@ -253,20 +253,90 @@ module.exports = {
     } else return res.json(context);
   },
 
+  //impact = (número total de replicações * 5) + (número total delikes * 3) - número total de dislikes
   tweet_top20: function (req,res){
     /*
-      id
+      
     */
     var context = {};
     context.status = 'error';
 
     //console.log(req.body);
 
-    var data = req.param("id") ? req.param("id") : undefined;
+    var initialize_values = function (tweet_set) {
+      for(var i = 0; i < tweet_set.length; i++){
+        tweet_set[i].number_likes = 0;
+        tweet_set[i].number_dislikes = 0;
+        tweet_set[i].number_retweets = 0;
+      }
+      return tweet_set;
+    }
+
+    var likes_sum = function (tweet_set) {
+      var sum = 0;
+      if(tweet_set.reactions){
+        for (var j = 0; j < tweet_set.reactions.length; j++){
+          if (tweet_set.reactions[j].rate == 1){ 
+            sum++;
+          }
+        }
+      }    
+      return sum;
+    }
+
+    var dislikes_sum = function (tweet_set) {
+      var sum = 0;
+      if(tweet_set.reactions){
+        for (var j = 0; j < tweet_set.reactions.length; j++){
+          if (tweet_set.reactions[j].rate != 1){ 
+            sum++;
+          }
+        }
+      }    
+      return sum;
+    }
+
+    var retweets_sum = function (tweet_set, index) {
+      var tweet_id = tweet_set[index].id;
+      var sum = 0;
+      for (var i = 0; i < tweet_set.length; i++){
+        if(tweet_set[i].retweet == tweet_id){
+          sum++;
+        }
+      }
+      return sum;
+    }
+
+    var data = (req.body.formdata) ? req.body.formdata : undefined;
     if (data) {
       try {
-        //aqui vai a pesquisa, date está dentro de data separada por --
-      } catch (err) {return res.json(context);}
+        Tweet.find().populate("reactions").exec(function(err, tweet_set){
+          if(err) throw err;
+          
+          if(tweet_set){
+            tweet_set = initialize_values(tweet_set);
+            //console.log(tweet_set.length);
+            for(var i = 0; i < tweet_set.length; i++){
+              tweet_set[i].number_likes = likes_sum(tweet_set[i]);
+              tweet_set[i].number_dislikes = dislikes_sum(tweet_set[i]);
+              tweet_set[i].number_retweets = retweets_sum(tweet_set, i);
+            }
+            for(var i = 0; i < tweet_set.length; i++){
+              tweet_set[i].impact = ((tweet_set[i].number_retweets * 5) + (tweet_set[i].number_likes*3) - tweet_set[i].number_dislikes); 
+            }
+
+            context.response = tweet_set.sort(function(a,b){
+              return b.impact-a.impact;
+            }).slice(0, 20);
+
+            console.log(context.response);
+            context.status = 'success';
+            return res.json(context);
+          }
+        });
+      } catch (err) {
+        return res.json(context);
+      }
     } else return res.json(context);
   }
 };

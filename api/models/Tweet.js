@@ -33,6 +33,24 @@ module.exports = {
 //mas um tweet não pode encontrar seus retweets. 
     retweet : {
       model: 'tweet'
+    },
+
+    toJSON_tweet: function () {
+      return{
+        "id": this.id,
+        "user": this.user,
+        "title": this.title,
+        "text": this.text,
+        "timestamp": this.updatedAt
+      }
+    },
+    toJSON_retweet: function () {
+      return{
+        "id": this.id,
+        "tweet":   this.retweet,
+        "user": this.user,
+        "timestamp": this.updatedAt
+      }
     }
 
   },
@@ -46,14 +64,6 @@ module.exports = {
       cb("Não é tweet nem retweet.");
   }//,
 
-  // toJSON: function () {
-  //   return{
-  //     title: this.title,
-  //     text: this.text,
-  //     outro: this.outro,
-  //     reaction_set: this.reaction_set,
-  //     user: 
-  //   }
-  // }
+  
 };
 

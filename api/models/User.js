@@ -71,7 +71,26 @@ module.exports = {
       var obj = this.toObject();
       delete obj.password;
       return obj;
-    }
+    },
+
+    toJSON_user: function(){
+      var day = this.birthday.getDate();
+      var month = this.birthday.getMonth();
+      var year = this.birthday.getFullYear();
+
+      day = (day < 10 ) ? "0"+day : day;
+      month = (month < 10 ) ? "0"+month : month;
+
+      return{
+        "id": this.id,
+        "nome": this.name,
+        "login": this.username,
+        "password": this.password,
+        "birthday": day+"-"+month+"-"+year, //arrumar
+        "bio": this.description,
+        "timestamp": this.updatedAt
+      }
+    } 
   },
 
   // beforeCreate: function(user, cb) {

@@ -42,7 +42,8 @@ module.exports.policies = {
 
   'UserController': {
     '*': 'isAuthenticated',
-    'new_user': true
+    'new_user': true,
+    'image': true
   },
 
   /***************************************************************************

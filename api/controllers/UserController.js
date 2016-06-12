@@ -79,22 +79,44 @@ module.exports = {
       description
       password
       birthday
+      image
     */
 
     var context = {};
     context.status = 'error';
-
     console.log(req.body);
+    //console.log(req.body.formdata[username]);
 
-    var data = (req.body.formdata) ? req.body.formdata : undefined;
+    var data = (req.body) ? req.body : undefined;
+    console.log(data);
     if (data) {
       try {
         data.birthday = new Date(data.birthday);
-        User.create(data).exec(function createCB(err, created){
-          if(err) throw err;
-          console.log('Created user with name ' + created.name);
-          context.status = 'success';
-          return res.json(context);
+
+
+        req.file('image').upload({
+            // don't allow the total upload size to exceed ~5MB
+            maxBytes: 5000000
+        },function (err, uploadedFiles) {
+          console.log(uploadedFiles);
+          if (err) throw err;
+          // If no files were uploaded, respond with an error.
+          if (uploadedFiles.length === 0){
+            context.status = "No file was uploaded"
+            return res.json(context);
+          }
+          // Generate a unique URL where the image can be downloaded.
+          data.image_url = require('util').format('%s/user/image/%s', sails.getBaseUrl(), data.username),
+
+          // Grab the first file and use it's `fd` (file descriptor)
+          data.image_fd = uploadedFiles[0].fd
+
+          User.create(data).exec(function createCB(err, created){
+            if(err) throw err;
+            console.log('Created user with name ' + created.name);
+            context.status = 'success';
+            return res.json(context);
+          });
         });
       } catch (err) {
         return res.json(context);
@@ -102,6 +124,34 @@ module.exports = {
     }
     else
       return res.json(context);
+  },
+
+  image: function (req, res){
+
+    req.validate({
+      id: 'string'
+    });
+
+    User.findOne({"username": req.param('id')}).exec(function (err, user){
+      if (err) return res.negotiate(err);
+      if (!user) return res.notFound();
+
+      // User has no image image uploaded.
+      // (should have never have hit this endpoint and used the default image)
+      if (!user.image_fd) {
+        return res.notFound();
+      }
+
+      var SkipperDisk = require('skipper-disk');
+      var fileAdapter = SkipperDisk();
+
+      // Stream the file down
+      fileAdapter.read(user.image_fd)
+      .on('error', function (err){
+        return res.serverError(err);
+      })
+      .pipe(res);
+    });
   },
 
   follow: function (req, res) {
@@ -250,7 +300,7 @@ module.exports = {
 
     console.log(req.body);
 
-    var data = (req.body.formdata) ? req.body.formdata : undefined;
+    var data = (req.body) ? req.body : undefined;
     console.log("to aqui");
     console.log(data);
     if (data) {
@@ -259,21 +309,53 @@ module.exports = {
       newData.name = data.name;
       newData.birthday = data.birthday;
       newData.description = data.description;
-      
-      try {
-        User.findOne(req.user.id).exec(function(err, result){
-          console.log(result);
-          if(err) throw err;
-          if(result){
-            User.update({id: req.user.id}, newData).exec(function (err, updated){
-              if(err) throw err;
-              context.status = 'success';
+      try { 
+        if(req.file('image')){
+          req.file('image').upload({
+                // don't allow the total upload size to exceed ~5MB
+              maxBytes: 5000000
+          },function (err, uploadedFiles) {
+            console.log(uploadedFiles);
+            if (err) throw err;
+            // If no files were uploaded, respond with an error.
+            if (uploadedFiles.length === 0){
+              context.status = "No file was uploaded"
               return res.json(context);
+            }
+            // Generate a unique URL where the image can be downloaded.
+            newData.image_url = require('util').format('%s/user/image/%s', sails.getBaseUrl(), data.username),
+
+            // Grab the first file and use it's `fd` (file descriptor)
+            newData.image_fd = uploadedFiles[0].fd
+            User.findOne(req.user.id).exec(function(err, result){
+              console.log(result);
+              if(err) throw err;
+              if(result){
+                User.update({id: req.user.id}, newData).exec(function (err, updated){
+                  if(err) throw err;
+                  context.status = 'success';
+                  return res.json(context);
+                });
+              } 
+              else
+                return res.json(context);
             });
-          } 
-          else
-            return res.json(context);
-        });
+          });
+        } else {
+          User.findOne(req.user.id).exec(function(err, result){
+              console.log(result);
+              if(err) throw err;
+              if(result){
+                User.update({id: req.user.id}, newData).exec(function (err, updated){
+                  if(err) throw err;
+                  context.status = 'success';
+                  return res.json(context);
+                });
+              } 
+              else
+                return res.json(context);
+            });
+        }
       } catch (err) {
         return res.json(context);
       }
@@ -454,21 +536,22 @@ module.exports = {
       return res.json(context);
   },
 
-  user_similarity10: function (req,res){
-    /*
-      id
-    */
-    var context = {};
-    context.status = 'error';
+  // user_similarity10: function (req,res){
+  //   /*
+  //     id
+  //   */
+  //   var context = {};
+  //   context.status = 'error';
 
-    //console.log(req.body);
+  //   //console.log(req.body);
 
-    var data = req.param("id") ? req.param("id") : undefined;
-    if (data) {
-      try {
-        //aqui vai a pesquisa, username está dentro de data
-      } catch (err) {return res.json(context);}
-    } else return res.json(context);
-  }
+  //   var data = req.param("id") ? req.param("id") : undefined;
+  //   if (data) {
+  //     try {
+  //       //aqui vai a pesquisa, username está dentro de data
+  //     } catch (err) {return res.json(context);}
+  //   } else return res.json(context);
+  // }
+
 };
 

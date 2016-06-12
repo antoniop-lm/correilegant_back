@@ -37,6 +37,14 @@ module.exports = {
       required: true
     },
 
+    image_url : {
+      type: 'string'
+    },
+
+    image_fd : {
+      type: 'string'
+    },
+
     groups_owner:{
       collection: 'group',
       via: 'owner'

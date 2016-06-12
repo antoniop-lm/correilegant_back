@@ -256,7 +256,8 @@ module.exports = {
   //impact = (número total de replicações * 5) + (número total delikes * 3) - número total de dislikes
   tweet_top20: function (req,res){
     /*
-      
+      date_ini
+      date_end
     */
     var context = {};
     context.status = 'error';
@@ -310,7 +311,14 @@ module.exports = {
     var data = (req.body.formdata) ? req.body.formdata : undefined;
     if (data) {
       try {
-        Tweet.find().populate("reactions").exec(function(err, tweet_set){
+        if (!data.date_ini){
+          data.date_ini = new Date("1970-01-02");
+        }
+        if(!data.date_end){
+          data.date_end = new Date;
+        }
+        console.log(data.date_ini);
+        Tweet.find({createdAt: {'>=': new Date(data.date_ini), '<=': new Date(data.date_end)} }).populate("reactions").exec(function(err, tweet_set){
           if(err) throw err;
           
           if(tweet_set){

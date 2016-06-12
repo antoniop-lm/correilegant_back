@@ -57,7 +57,6 @@ module.exports = {
       });
     }
     
-    //ROLÊ
     var load_groups = function (cb) {
       var list = [];
       for (var i=0; i < obj.group.length; i++){

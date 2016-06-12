@@ -41,7 +41,7 @@ module.exports.routes = {
   '/logout': 'AuthController.logout',
 
   'post /uploaddb': 'UploadDownloadController.uploaddb',
-  '/downloaddb': 'UploadDownloadController.downloadDB',
+  '/downloaddb.json': 'UploadDownloadController.downloadDB',
 
   /***************************************************************************
   *                                                                          *

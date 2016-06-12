@@ -351,10 +351,10 @@ module.exports = {
   //influence= (número total de tweets * 2) + (número total de republicações * 2) + número total de likes - número total de dislikes
   user_top20: function (req, res) {
     /*
-      
+      date_ini
+      date_end
     */
-    var context = {};
-    context.status = 'error';
+    
     var actual_user = -1;
 
     var initialize_values = function (users) {
@@ -399,15 +399,26 @@ module.exports = {
       return sum;
     }
 
+    var context = {};
+    context.status = 'error';
+
     var data = (req.body.formdata) ? req.body.formdata : undefined;
     if (data) {
       try {
         data.user = req.user.id;
-        User.find().exec(function(err, users){
+        if (!data.date_ini){
+          data.date_ini = new Date("1970-01-02");
+        }
+        if(!data.date_end){
+          data.date_end = new Date;
+        }
+        User.find({createdAt: {'<=': new Date(data.date_end)} }).exec(function(err, users){
           if(err) throw err;
           if(users){
             //console.log(users);
-            Tweet.find().populate("reactions").exec(function(err, tweet_set){
+            
+            console.log(Date(data.date_ini));
+            Tweet.find({createdAt: {'>=': new Date(data.date_ini), '<=': new Date(data.date_end)} }).populate("reactions").exec(function(err, tweet_set){
               if(err) throw err;
               if(tweet_set){
                 users = initialize_values(users);

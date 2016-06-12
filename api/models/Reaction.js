@@ -21,6 +21,15 @@ module.exports = {
     rate : {
       type: 'integer',
       required: true
+    },
+
+    toJSON_reaction: function () {
+      return{
+        "tweet": this.tweet,
+        "user": this.user,
+        "reaction": this.rate,
+        "timestamp": this.updatedAt
+      }
     }
   }
 };

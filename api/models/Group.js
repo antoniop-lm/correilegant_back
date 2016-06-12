@@ -10,7 +10,8 @@ module.exports = {
   attributes: {
     owner : {
       model: 'user',
-      required: true
+      required: true,
+      notNull: true
     },
 
     name : {
@@ -23,10 +24,16 @@ module.exports = {
       via: 'groups'
     },
 
-    owner:{
-      model: 'user',
-      required: true,
-      notNull: true
+    toJSON_group: function () {
+      var list_members = [];
+      for(var i = 0; i < this.members.length; i++){
+        list_members.push(this.members[i].id);
+      }
+      return{
+        "nome": this.name,
+        "users": list_members,
+        "relativeId": this.id
+      }
     }
   }
 };

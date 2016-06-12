@@ -9,144 +9,150 @@ var async = require("async");
 
 module.exports = {
 
+  uploaddb: function (req, res) {
+    /*
+      title
+      text
+    */
+    var obj = null;
 
-  // uploaddb: function (req, res) {
-  //   /*
-  //     title
-  //     text
-  //   */
-  //   var obj = null;
+    var load_users = function (cb) {
+      var list = [];
+      for (var i=0; i < obj.users.length; i++){
+        list.push({
+          "id": obj.users[i].id,
+          "name": obj.users[i].nome,
+          "username": obj.users[i].login,
+          "description": obj.users[i].bio,
+          "password": obj.users[i].password,
+          "birthday": obj.users[i].birthday.split("-").reverse().join("-"),
+          "createdAt": obj.users[i].timestamp,
+          "updatedAt": obj.users[i].timestamp,
+        });
+      }
+      User.create(list).exec(function(err, result){
+        if (err) cb(err, null);
+        cb(null, result);
+      });
 
-  //   var load_users = function (cb) {
-  //     var list = [];
-  //     for (var i=0; i < obj.users.length; i++){
-  //       list.push({
-  //         "id": obj.users[i].id;
-  //         "name": obj.users[i].nome,
-  //         "username": obj.users[i].login,
-  //         "description": obj.users[i].bio,
-  //         "password": obj.users[i].password,
-  //         "birthday": obj.users[i].birthday.split("-").reverse().join("-"),
-  //         "createdAt": obj.users[i].timestamp,
-  //         "updatedAt": obj.users[i].timestamp,
-  //       });
-  //     }
-  //     User.create(list).exec(function(err, result){
-  //       if (err) cb(err, null);
-  //       cb(null, result);
-  //     });
+    }
 
-  //   }
+    var vincule_user = function(item, cb){
+      User.findOne(item.follower).exec(function(err, result){
+        if (err) cb(err, null);
+        result.follow.add(item.follows);
+        result.save(function(err, result_save) {
+          if(err) cb(err, null);
+          cb(null, result_save);
+        });
 
-  //   var vincule_user = function(item, cb){
-  //     User.findOne(item.follower).exec(function(err, result){
-  //       if (err) cb(err, null);
-  //       result.follow.add(item.follows);
-  //       result.save(function(err, result_save) {
-  //         if(err) cb(err, null);
-  //         cb(null, result_save);
-  //       });
+      });
+    }
 
-  //     });
-  //   }
-
-  //   var load_follows = function (cb) {
-  //     var list = [];
-  //     async.each(obj.follow, vincule_user, function(err){
-  //       if (err) cb(err);
-  //       cb();
-  //     });
-  //   }
+    var load_follows = function (cb) {
+      var list = [];
+      async.forEach(obj.follow, vincule_user, function(err){
+        if (err) cb(err);
+        cb();
+      });
+    }
     
-  //   //ROLÊ
-  //   var load_groups = function (cb) {
-  //     var list = [];
-  //     for (var i=0; i < obj.users.length; i++){
-  //       list.push({
-  //         "id": obj.users[i].id;
-  //         "name": obj.users[i].nome,
-  //         "username": obj.users[i].login,
-  //         "description": obj.users[i].bio,
-  //         "password": obj.users[i].password,
-  //         "birthday": obj.users[i].birthday.split("-").reverse().join("-"),
-  //         "createdAt": obj.users[i].timestamp,
-  //         "updatedAt": obj.users[i].timestamp,
-  //       });
-  //     }
-  //     User.create(list).exec(function(err, result){
-  //       if (err) cb(err, null);
-  //       cb(null, result);
-  //     });
-  //   }
+    //ROLÊ
+    var load_groups = function (cb) {
+      var list = [];
+      for (var i=0; i < obj.group.length; i++){
+        
+        for(var j = 0; j < obj.group[i].list.length; j++){
+          list.push({
+            "owner": obj.group[i].id,
+            "name": obj.group[i].list[j].nome,
+            "members": obj.group[i].list[j].users
+          });
 
-  //   var load_tweets = function (cb) {
-  //     var list = [];
-  //     for (var i=0; i < obj.tweets.length; i++){
-  //       list.push({
-  //         "id": obj.tweets[i].id;
-  //         "text": obj.tweets[i].text,
-  //         "title": obj.tweets[i].title,
-  //         "user": obj.tweets[i].user,
-  //         "createdAt": obj.tweets[i].timestamp,
-  //         "updatedAt": obj.tweets[i].timestamp,
-  //       });
-  //     }
-  //     for (var i=0; i < obj.share.length; i++){
-  //       list.push({
-  //         "id": obj.share[i].id;
-  //         "retweet": obj.share[i].tweet,
-  //         "user": obj.share[i].user,
-  //         "createdAt": obj.tweets[i].timestamp,
-  //         "updatedAt": obj.tweets[i].timestamp,
-  //       });
-  //     }
-  //     Tweet.create(list).exec(function(err, result){
-  //       if (err) cb(err, null);
-  //       cb(null, result);
-  //     });
-  //   }
+        }
+      }
+      Group.create(list).exec(function(err, result){
+        if (err) cb(err, null);
+        cb(null, result);
+      });
+    }
 
-  //   var load_reactions = function (cb) {
-  //     var list = [];
-  //     for (var i=0; i < obj.reactions.length; i++){
-  //       list.push({
-  //         "rate": obj.reactions[i].reaction;
-  //         "user": obj.reactions[i].user,
-  //         "tweet": obj.reactions[i].tweet,
-  //         "createdAt": obj.reactions[i].timestamp,
-  //         "updatedAt": obj.reactions[i].timestamp,
-  //       });
-  //     }
-  //     Reaction.create(list).exec(function(err, result){
-  //       if (err) cb(err, null);
-  //       cb(null, result);
-  //     });
-  //   }
+    var load_tweets = function (cb) {
+      var list1 = [];
+      for (var i=0; i < obj.tweets.length; i++){
+        list1.push({
+          "id": obj.tweets[i].id,
+          "text": obj.tweets[i].text,
+          "title": obj.tweets[i].title,
+          "user": obj.tweets[i].user,
+          "createdAt": obj.tweets[i].timestamp,
+          "updatedAt": obj.tweets[i].timestamp,
+        });
+      }
+      var list2 = [];
+      for (var i=0; i < obj.share.length; i++){
+        list2.push({
+          "id": obj.share[i].id,
+          "retweet": obj.share[i].tweet,
+          "user": obj.share[i].user,
+          "createdAt": obj.share[i].timestamp,
+          "updatedAt": obj.share[i].timestamp,
+        });
+      }
+      Tweet.create(list1).exec(function(err, result){
+        if (err) cb(err, null);
+        Tweet.create(list2).exec(function(err, result){
+          if (err) cb(err, null);
+          cb(null, result);
+        });
+      });
+    }
 
-  //   var context = {};
-  //   context.status = "error";
+    var load_reactions = function (cb) {
+      var list = [];
+      for (var i=0; i < obj.reactions.length; i++){
+        list.push({
+          "rate": obj.reactions[i].reaction,
+          "user": obj.reactions[i].user,
+          "tweet": obj.reactions[i].tweet,
+          "createdAt": obj.reactions[i].timestamp,
+          "updatedAt": obj.reactions[i].timestamp,
+        });
+      }
+      Reaction.create(list).exec(function(err, result){
+        if (err) cb(err, null);
+        cb(null, result);
+      });
+    }
 
-  //   console.log({'req.file': req.file('file'), 'req.file.path': req.file('file').path});
+    var context = {};
+    context.status = "error";
 
-  //   req.file('file').upload(function (err, uploadedFiles){
-  //   	console.log({'upfile': uploadedFiles[0], 'upfile.path': uploadedFiles[0].fd});
-  //     if (err) throw err;
-  //     obj = JSON.parse(fs.readFileSync(uploadedFiles[0].fd, 'utf8'));
+    console.log({'req.file': req.file('file'), 'req.file.path': req.file('file').path});
+    try {
+    req.file('file').upload(function (err, uploadedFiles){
+    	console.log({'upfile': uploadedFiles[0], 'upfile.path': uploadedFiles[0].fd});
+      if (err) throw err;
+      obj = JSON.parse(fs.readFileSync(uploadedFiles[0].fd, 'utf8'));
       
-  //     async.series({
-  //       users: load_users(cb), 
-  //       follows: load_follows(cb),
-  //       groups: load_groups(cb),
-  //       tweets: load_tweets(cb),
-  //       reactions: load_reactions(cb)
-  //     });
+      async.series({
+        users: load_users, 
+        follows: load_follows,
+        groups: load_groups,
+        tweets: load_tweets,
+        reactions: load_reactions
+      }, function(err){
+        if (err) throw err;
+        context.status = "success";
+        return res.json(context);
+      });
 
-  //     context.status = "success";
-  //     return res.json(context);
-  //   });
+    });
+    }catch(err){
+      return res.json(context);
+    }
 
-
-  // },
+  },
 
   downloadDB: function (req, res) {
     /*

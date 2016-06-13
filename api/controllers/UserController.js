@@ -540,15 +540,67 @@ module.exports = {
     /*
       id
     */
+
+    var find_retweets = function (tweet_set) {
+      var result = [];
+      for (var i = 0; i < tweet_set.length; i++){
+        if(tweet_set[i].retweet != null){
+          result.push(tweet_set[i].retweet);
+        }
+      }
+      return result;
+    }
+
+    var calculate_sim = function (user_sim, user){
+      user.retweet_list = find_retweets(user.tweet_set);
+      //console.log(user.retweet_list);
+      user.similarity = 0.0;
+      for(var i = 0; i < user.retweet_list.length; i++){
+        for(var j = 0; j < user_sim.retweet_list.length; j++){
+          if (user.retweet_list[i] == user_sim.retweet_list[j]) 
+            user.similarity++;
+        }
+      }
+      if (user_sim.retweet_list.length > 0)
+        user.similarity = (user.similarity/user_sim.retweet_list.length);
+
+      return user;
+    }
+
     var context = {};
     context.status = 'error';
 
     //console.log(req.body);
 
-    var data = req.param("id") ? req.param("id") : undefined;
+    var data = (req.body.formdata) ? req.body.formdata : undefined;
     if (data) {
       try {
         //aqui vai a pesquisa, username está dentro de data, devolver resultado em data.result!
+        User.find().populate('tweet_set').exec(function(err, users){
+          if(err) throw err;
+          for(var i = 0; i < users.length && users[i].id != data.id; i++);
+          var user_sim = users[i];
+          user_sim.retweet_list = find_retweets(user_sim.tweet_set);
+          //console.log(user_sim.retweet_list);
+          var list_sim = [];
+          for(var i = 0; i < users.length; i++){
+            if(users[i].id != user_sim.id){
+              list_sim.push(calculate_sim(user_sim, users[i]));
+            }
+          }
+
+          context.response = [];
+          if (list_sim.length > 1){
+            context.response = list_sim.sort(function(a,b){
+              return b.similarity-a.similarity;
+            }).slice(0, 10);
+          } else {
+            context.response.push(list_sim[0]);
+          }
+
+          context.status = 'success';
+          return res.json(context);
+        });
       } catch (err) {return res.json(context);}
     } else return res.json(context);
   }

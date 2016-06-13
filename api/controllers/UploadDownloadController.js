@@ -11,9 +11,13 @@ module.exports = {
 
   uploaddb: function (req, res) {
     /*
-      title
-      text
+      Requisitos: -
+      Paramêtros: Arquivo .json contendo uma base de dados
+      Saida: -
+
+      Importa toda a base de dados de um .json, que foi definido pela turma, para o postgress
     */
+
     var obj = null;
 
     var load_users = function (cb) {
@@ -127,10 +131,8 @@ module.exports = {
     var context = {};
     context.status = "error";
 
-    console.log({'req.file': req.file('file'), 'req.file.path': req.file('file').path});
     try {
       req.file('file').upload(function (err, uploadedFiles){
-      	console.log({'upfile': uploadedFiles[0], 'upfile.path': uploadedFiles[0].fd});
         if (err) throw err;
         obj = JSON.parse(fs.readFileSync(uploadedFiles[0].fd, 'utf8'));
         
@@ -155,7 +157,11 @@ module.exports = {
 
   downloadDB: function (req, res) {
     /*
+      Requisitos: -
+      Paramêtros: -
+      Saida: Retorna um .json, que foi definido pela turma
 
+      Exporta toda a base de dados em um .json, que foi definido pela turma.
     */
 
     var id_follow = 0;
@@ -193,10 +199,8 @@ module.exports = {
       for (var i = 0; i < results.users.length; i++){
         db.users.push(results.users[i].toJSON_user());
         db.group.push({"id": results.users[i].id, "list": []});
-        //console.log(results.users[i].follow);
         for(var j = 0; j < results.users[i].follow.length; j++){
           id_follow++;
-          //console.log(results.users[i].follow);
           db.follow.push({
             "id": id_follow,
             "follower": results.users[i].id,
@@ -213,13 +217,11 @@ module.exports = {
       }
       for (var i = 0; i < results.groups.length; i++){
         var index = find_by_attr(db.group, 'id', results.groups[i].owner)
-        console.log({"owner": results.groups[i].owner, "index": index});
 
         db.group[index].list.push(results.groups[i].toJSON_group());
       }
 
       for (var i = db.group.length-1; i >= 0 ; i--){
-        console.log(db.group[i]);
         if(db.group[i].list.length == 0){
           db.group.splice(i, 1);
         }
@@ -229,7 +231,6 @@ module.exports = {
         db.reactions.push(results.reactions[i].toJSON_reaction());
       }
 
-      console.log("batata");
       res.set("Content-Type", "application/json");
       res.set("Content-Disposition", "attachment");
 

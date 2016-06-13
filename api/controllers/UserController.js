@@ -536,22 +536,22 @@ module.exports = {
       return res.json(context);
   },
 
-  // user_similarity10: function (req,res){
-  //   /*
-  //     id
-  //   */
-  //   var context = {};
-  //   context.status = 'error';
+  user_similarity10: function (req,res){
+    /*
+      id
+    */
+    var context = {};
+    context.status = 'error';
 
-  //   //console.log(req.body);
+    //console.log(req.body);
 
-  //   var data = req.param("id") ? req.param("id") : undefined;
-  //   if (data) {
-  //     try {
-  //       //aqui vai a pesquisa, username está dentro de data
-  //     } catch (err) {return res.json(context);}
-  //   } else return res.json(context);
-  // }
+    var data = req.param("id") ? req.param("id") : undefined;
+    if (data) {
+      try {
+        //aqui vai a pesquisa, username está dentro de data, devolver resultado em data.result!
+      } catch (err) {return res.json(context);}
+    } else return res.json(context);
+  }
 
 };
 

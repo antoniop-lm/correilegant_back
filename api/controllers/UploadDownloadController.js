@@ -129,24 +129,24 @@ module.exports = {
 
     console.log({'req.file': req.file('file'), 'req.file.path': req.file('file').path});
     try {
-    req.file('file').upload(function (err, uploadedFiles){
-    	console.log({'upfile': uploadedFiles[0], 'upfile.path': uploadedFiles[0].fd});
-      if (err) throw err;
-      obj = JSON.parse(fs.readFileSync(uploadedFiles[0].fd, 'utf8'));
-      
-      async.series({
-        users: load_users, 
-        follows: load_follows,
-        groups: load_groups,
-        tweets: load_tweets,
-        reactions: load_reactions
-      }, function(err){
+      req.file('file').upload(function (err, uploadedFiles){
+      	console.log({'upfile': uploadedFiles[0], 'upfile.path': uploadedFiles[0].fd});
         if (err) throw err;
-        context.status = "success";
-        return res.json(context);
-      });
+        obj = JSON.parse(fs.readFileSync(uploadedFiles[0].fd, 'utf8'));
+        
+        async.series({
+          users: load_users, 
+          follows: load_follows,
+          groups: load_groups,
+          tweets: load_tweets,
+          reactions: load_reactions
+        }, function(err){
+          if (err) throw err;
+          context.status = "success";
+          return res.json(context);
+        });
 
-    });
+      });
     }catch(err){
       return res.json(context);
     }

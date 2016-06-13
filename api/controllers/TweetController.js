@@ -318,7 +318,7 @@ module.exports = {
           data.date_end = new Date;
         }
         console.log(data.date_ini);
-        Tweet.find({createdAt: {'>=': new Date(data.date_ini), '<=': new Date(data.date_end)} }).populate("reactions").exec(function(err, tweet_set){
+        Tweet.find({createdAt: {'>=': new Date(data.date_ini), '<=': new Date(data.date_end)} }).populate("reactions").populate("user").populate("retweet").exec(function(err, tweet_set){
           if(err) throw err;
           
           if(tweet_set){

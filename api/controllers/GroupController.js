@@ -7,6 +7,13 @@
 
  module.exports = {
 	set_group: function (req, res) {
+		/* 
+		Requisitos: Estar logado
+		Parametros: dados para um grupo
+		Saída: grupo criado
+		
+		Caso o grupo já exista, muda os dados
+		*/
 	    /*
 	      name
 	      *id
@@ -14,8 +21,6 @@
 	    */
 	    var context = {};
 	    context.status = 'error';
-
-	    console.log(req.body);
 
 	    var data = (req.body) ? req.body : undefined;
 	    if (data) {
@@ -50,6 +55,13 @@
   	},
 
   	my_groups: function(req, res) {
+  		/* 
+		Requisitos: Estar logado
+		Parametros: - 
+		Saída: Todos os grupos do usuário
+		
+		Retorna todos os grupos do usuário
+		*/
   		var context = {};
 	    context.status = 'error';
 	    try {
@@ -68,6 +80,13 @@
   	},
 
   	include_member: function (req, res) {
+  		/* 
+		Requisitos: Estar logado
+		Parametros: grupo e usuário a ser incluído
+		Saída: grupo criado
+		
+		Inclui um usuário em grupo
+		*/
   		/*
       	  group
       	  user
@@ -75,7 +94,7 @@
 	    var context = {};
 	    context.status = 'error';
 
-	    console.log(req.body);
+	    
 
 	    var data = (req.body.formdata) ? req.body.formdata : undefined;
 	    if (data) {
@@ -103,6 +122,13 @@
   	},
 
   	remove_member: function (req, res) {
+	  	/* 
+		Requisitos: Estar logado
+		Parametros: grupo e usuário a ser excluido
+		Saída: grupo criado
+		
+		Exlui um usuário de em grupo
+		*/
 	  	/*
 	      group
 	      user
@@ -110,8 +136,7 @@
 	    var context = {};
 	    context.status = 'error';
 
-	    console.log(req.body);
-
+	    
 	    var data = (req.body.formdata) ? req.body.formdata : undefined;
 	    if (data) {
 	      	try {
@@ -139,14 +164,20 @@
   	},
 
   	delete_group: function(req,res) {
+  		/* 
+		Requisitos: Estar logado
+		Parametros: grupo a ser deletado
+		Saída: -
+		
+		Exclui um grupo
+		*/
   		/*
 	      name
 	    */
 	    var context = {};
 	    context.status = 'error';
 
-	    console.log(req.body);
-
+	    
 	    var data = (req.body) ? req.body : undefined;
 	    if (data) {
 	      	try {

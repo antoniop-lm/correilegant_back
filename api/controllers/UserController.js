@@ -7,6 +7,14 @@
 
 module.exports = {
   eu: function (req, res) {
+    /*
+      Requisitos: Estar logado
+      Paramêtros: -
+      Saida: Retorna o usuário logado
+
+      Identifica o usuário logado
+    */
+
     var context = {};
     context.status = 'error';
 
@@ -23,13 +31,20 @@ module.exports = {
   },
 
   details: function (req, res) {
+    /*
+      Requisitos: Estar logado
+      Paramêtros: -
+      Saida: Retorna todas as informações de usuário logado
+
+      Busca todas as informações de usuário logado
+    */
+
     var context = {};
     context.status = 'error';
     try {
       User.findOne({"username" : req.param("id")}).exec(function(err, found){
         if (err) throw err;
         context.user = found;
-        //console.log(found);
         context.status = 'success';
         res.json(context);
       });
@@ -39,11 +54,17 @@ module.exports = {
   },
 
   am_i_following: function (req, res) {
+    /*
+      Requisitos: Estar logado
+      Paramêtros: -
+      Saida: Retorna uma lista de usuários que usuário logado está seguindo
+
+    */
+
     var context = {};
     context.status = 'error';
     var data = (req.body.formdata) ? req.body.formdata : undefined;
 
-          console.log(data);
     if(data){
       try {
         User.findOne(req.user.id).populate("follow").exec(function(err, found){
@@ -56,7 +77,6 @@ module.exports = {
             for (var i in data.requester.follow){
               id_list.push(data.requester.follow[i].id);
             }
-            console.log(id_list.indexOf(found.id));
             context.following = id_list.indexOf(found.id) != -1;
             context.status = 'success';
             res.json(context);
@@ -73,22 +93,19 @@ module.exports = {
   },
 
   new_user: function (req, res) {
+
     /*
-      name
-      username
-      description
-      password
-      birthday
-      image
+      Requisitos: Estar logado
+      Paramêtros: name, username, description, password, birthday, image
+      Saida: -
+
+      Realiza o cadastro de um usuário com todas as caracteristicas passadas por parametro.
     */
 
     var context = {};
     context.status = 'error';
-    console.log(req.body);
-    //console.log(req.body.formdata[username]);
 
     var data = (req.body) ? req.body : undefined;
-    console.log(data);
     if (data) {
       try {
         data.birthday = new Date(data.birthday);
@@ -98,7 +115,6 @@ module.exports = {
             // don't allow the total upload size to exceed ~5MB
             maxBytes: 5000000
         },function (err, uploadedFiles) {
-          console.log(uploadedFiles);
           if (err) throw err;
           // If no files were uploaded, respond with an error.
           if (uploadedFiles.length === 0){
@@ -113,7 +129,6 @@ module.exports = {
 
           User.create(data).exec(function createCB(err, created){
             if(err) throw err;
-            console.log('Created user with name ' + created.name);
             context.status = 'success';
             return res.json(context);
           });
@@ -127,6 +142,13 @@ module.exports = {
   },
 
   image: function (req, res){
+    /*
+      Requisitos: -
+      Paramêtros: -
+      Saida: Imagem de perfil
+
+      Função de auxilio para busca da imagem de perfil do usuário
+    */
 
     req.validate({
       id: 'string'
@@ -156,32 +178,27 @@ module.exports = {
 
   follow: function (req, res) {
     /*
-      user
+      Requisitos: Estar logado
+      Paramêtros: user
+      Saida: -
+
+      Realiza a função "follow", do usuário logado para o "user" passado como parâmetro
     */
+    
     var context = {};
     context.status = 'error';
 
-    console.log(req.body);
-    console.log(req.body.formdata);
 
     var data = (req.body.formdata) ? req.body.formdata : undefined;
-    console.log("data");
-    console.log(data);
     if (data) {
       try {
         User.findOne({where: {username: data.user}}).exec(function(err, result){
           if(err) throw err;
-          console.log("result");
-          console.log(result);
           if(result){
             data.following = result;
 
             requester = req.user;
-            console.log("requester");
-            console.log(requester);
             requester.follow.add(data.following.id);
-            console.log("requester.follow");
-            console.log(requester.follow);
             requester.save(function(err, result) {
               if(err) throw err;
               context.status = 'success';
@@ -196,32 +213,26 @@ module.exports = {
 
   unfollow: function (req, res) {
     /*
-      user
+      Requisitos: Estar logado
+      Paramêtros: user
+      Saida: -
+
+      Realiza a função "unfollow", do usuário logado para o "user" passado como parâmetro, caso o esteja seguindo
     */
     var context = {};
     context.status = 'error';
 
-    console.log(req.body);
-    console.log(req.body.formdata);
 
     var data = (req.body.formdata) ? req.body.formdata : undefined;
-    console.log("data");
-    console.log(data);
     if (data) {
       try {
         User.findOne({where: {username: data.user}}).exec(function(err, result){
           if(err) throw err;
-          console.log("result");
-          console.log(result);
           if(result){
             data.following = result;
 
             requester = req.user;
-            console.log("requester");
-            console.log(requester);
             requester.follow.remove(data.following.id);
-            console.log("requester.follow");
-            console.log(requester.follow);
             requester.save(function(err, result) {
               if(err) throw err;
               context.status = 'success';
@@ -234,40 +245,13 @@ module.exports = {
     } else res.json(context);
   },
 
-  // unfollow: function (req, res) {
-  //   /*
-  //     following
-  //   */
-  //   var context = {};
-  //   context.status = 'error';
-
-  //   console.log(req.body);
-
-  //   var data = (req.body.formdata) ? req.body.formdata : undefined;
-  //   if (data) {
-  //     try {
-  //       User.findOne({where: {username: data.following}}).exec(function(err, result){
-  //         if(err) throw err;
-  //         if(result){
-  //           data.following = result.id;
-
-  //           result = req.user;
-  //           result.follow.remove(data.following);
-  //           result.save(function(err, res) {
-  //             if(err) throw err;
-  //             context.status = 'success';
-  //             return res.json(context);
-  //           });
-  //         } else
-  //           return res.json(context); 
-  //       });
-  //     } catch (err) {return res.json(context);}
-  //   } else return res.json(context);
-  // },
-
   search_user: function(req,res) {
     /*
-      user
+      Requisitos: Estar logado
+      Paramêtros: user
+      Saida: Usuário buscado
+
+      Realiza uma busca nos usuário, pelo "user" passado como parâmetro e o retorna na saída
     */
     var context = {};
     context.status = "error";
@@ -288,21 +272,18 @@ module.exports = {
 
   update_user: function (req, res) {
     /*
-      name
-      username
-      description
-      password
-      birthday
+      Requisitos: Estar logado
+      Paramêtros: name, username, description, password, birthday, image
+      Saida: -
+
+      Realiza o update de dados do usuário logado.
     */
 
     var context = {};
     context.status = 'error';
 
-    console.log(req.body);
 
     var data = (req.body) ? req.body : undefined;
-    console.log("to aqui");
-    console.log(data);
     if (data) {
       var newData = {};
       newData.username = data.username;
@@ -315,7 +296,6 @@ module.exports = {
                 // don't allow the total upload size to exceed ~5MB
               maxBytes: 5000000
           },function (err, uploadedFiles) {
-            console.log(uploadedFiles);
             if (err) throw err;
             // If no files were uploaded, respond with an error.
             if (uploadedFiles.length === 0){
@@ -328,7 +308,6 @@ module.exports = {
             // Grab the first file and use it's `fd` (file descriptor)
             newData.image_fd = uploadedFiles[0].fd
             User.findOne(req.user.id).exec(function(err, result){
-              console.log(result);
               if(err) throw err;
               if(result){
                 User.update({id: req.user.id}, newData).exec(function (err, updated){
@@ -343,7 +322,6 @@ module.exports = {
           });
         } else {
           User.findOne(req.user.id).exec(function(err, result){
-              console.log(result);
               if(err) throw err;
               if(result){
                 User.update({id: req.user.id}, newData).exec(function (err, updated){
@@ -365,26 +343,24 @@ module.exports = {
 
   update_user_password: function (req, res) {
     /*
-      password
-      newpassword
-    */
+      Requisitos: Estar logado
+      Paramêtros: password, newpassword
+      Saida: -
 
+      Realiza o update da senha do usuário logado. 
+    */
+ 
     var context = {};
     context.status = 'error';
 
-    console.log(req.body);
 
     var data = (req.body.formdata) ? req.body.formdata : undefined;
-    console.log("to aqui dentro");
-    console.log(data);
     if (data) {
       var newData = {};
       newData.password = data.newpassword;
       
       try {
-        console.log("req user id "+ req.user.id);
         User.findOne(req.user.id).exec(function(err, result){
-          console.log(result);
           if(err) throw err;
           if(result){
             if (result.password == data.password){
@@ -409,11 +385,17 @@ module.exports = {
   },
 
   delete_user: function (req,res){
-    
+    /*
+      Requisitos: Estar logado
+      Paramêtros: -
+      Saida: -
+
+      Deleta o usuário logado.
+    */
+
     var context = {};
     context.status = 'error';
 
-    console.log(req.user.id);
 
     var data = (req.body.formdata) ? req.body.formdata : undefined;
     if (data) {
@@ -430,11 +412,15 @@ module.exports = {
     } else return res.json(context);
   },
 
-  //influence= (número total de tweets * 2) + (número total de republicações * 2) + número total de likes - número total de dislikes
+  
   user_top20: function (req, res) {
     /*
-      date_ini
-      date_end
+      Requisitos: Estar logado
+      Paramêtros: date_ini, date_end
+      Saida: Lista dos top 20 usuários mais influentes
+
+      Busca no sistema os top 20 usuários mais influentes baseado na seguinte equação:
+        influence= (número total de tweets * 2) + (número total de republicações * 2) + número total de likes - número total de dislikes
     */
     
     var actual_user = -1;
@@ -497,9 +483,7 @@ module.exports = {
         User.find({createdAt: {'<=': new Date(data.date_end)} }).exec(function(err, users){
           if(err) throw err;
           if(users){
-            //console.log(users);
             
-            console.log(Date(data.date_ini));
             Tweet.find({createdAt: {'>=': new Date(data.date_ini), '<=': new Date(data.date_end)} }).populate("reactions").exec(function(err, tweet_set){
               if(err) throw err;
               if(tweet_set){
@@ -520,7 +504,6 @@ module.exports = {
                   return b.influence-a.influence;
                 }).slice(0, 20);
 
-                console.log(context.response);
                 context.status = 'success';
                 return res.json(context);
               }
@@ -538,7 +521,12 @@ module.exports = {
 
   user_similarity10: function (req,res){
     /*
-      id
+      Requisitos: Estar logado
+      Paramêtros: id
+      Saida: Lista dos top 10 usuários mais similares ao user passado como parâmetro
+
+      Busca no sistema os top 10 usuários mais similares ao user passado como padrão baseado na seguinte equação:
+        similaridade(u1, u2) = (num_replicações_u1_e_u2) / (num_replicações_u1)    
     */
 
     var find_retweets = function (tweet_set) {
@@ -553,7 +541,6 @@ module.exports = {
 
     var calculate_sim = function (user_sim, user){
       user.retweet_list = find_retweets(user.tweet_set);
-      //console.log(user.retweet_list);
       user.similarity = 0.0;
       for(var i = 0; i < user.retweet_list.length; i++){
         for(var j = 0; j < user_sim.retweet_list.length; j++){
@@ -570,7 +557,6 @@ module.exports = {
     var context = {};
     context.status = 'error';
 
-    //console.log(req.body);
 
     var data = (req.body.formdata) ? req.body.formdata : undefined;
     if (data) {
@@ -581,7 +567,6 @@ module.exports = {
           for(var i = 0; i < users.length && users[i].id != data.id; i++);
           var user_sim = users[i];
           user_sim.retweet_list = find_retweets(user_sim.tweet_set);
-          //console.log(user_sim.retweet_list);
           var list_sim = [];
           for(var i = 0; i < users.length; i++){
             if(users[i].id != user_sim.id){

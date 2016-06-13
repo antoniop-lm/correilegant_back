@@ -8,14 +8,15 @@
 module.exports = {
   new_tweet: function (req, res) {
     /*
-      title
-      text
+      Requisitos: Estar logado
+      Paramêtros: title, text
+      Saida: -
+
+      Faz um novo tweet do user logado, com as caracteristicas passadas como parâmetro 
     */
 
     var context = {};
     context.status = 'error';
-
-    console.log(req.body);
 
     var data = (req.body.formdata) ? req.body.formdata : undefined;
     if (data) {
@@ -39,13 +40,16 @@ module.exports = {
 
   retweet: function (req,res) {
     /*
-      retweet
+      Requisitos: Estar logado
+      Paramêtros: retweet
+      Saida: -
+
+      Faz um novo retweet do user logado, retuitando o tweet passado em "retweet" 
     */
 
     var context = {};
     context.status = 'error';
 
-    console.log(req.body);
 
     var data = (req.body.formdata) ? req.body.formdata : undefined;
     if (data) {
@@ -75,18 +79,18 @@ module.exports = {
 
   update_tweet: function (req, res) {
     /*
-      id
-      title
-      text
+      Requisitos: Estar logado
+      Paramêtros: id, title, text
+      Saida: -
+
+      Faz o update do tweet do user logado, com as caracteristicas passadas como parâmetro 
     */
 
     var context = {};
     context.status = 'error';
 
-    console.log(req.body);
 
     var data = (req.body.formdata) ? req.body.formdata : undefined;
-    console.log(data);
     if (data) {
       newData = {};
       newData.title = data.title;
@@ -118,7 +122,11 @@ module.exports = {
 
   tag_search: function (req, res) {
     /*
-      tag
+      Requisitos: Estar logado
+      Paramêtros: tag
+      Saida: Retorna os posts que possuam "tag"
+
+      Faz uma busca nos tweets pela palavra armazenada em "tag", e retorna esses tweets
     */
 
     var context = {};
@@ -138,6 +146,13 @@ module.exports = {
   },
 
   following_posts: function (req, res){
+    /*
+      Requisitos: Estar logado
+      Paramêtros: -
+      Saida: Lista de seus posts e dos posts dos usuários que segue.
+
+      Retorna a timeline do usuario logado. Contém todos os seus post e os post dos usuários que segue.
+    */
     var context = {};
     context.status = 'error';
 
@@ -165,10 +180,16 @@ module.exports = {
   },
 
   my_tweets: function (req, res){
+    /*
+      Requisitos: Estar logado
+      Paramêtros: -
+      Saida: Lista de tweets do usuário logado
+
+      Busca todos os posts do usuário logado e os retorna numa lista 
+    */
     var context = {};
     context.status = 'error';
 
-    console.log(req.body);
 
     var data = (req.body.formdata) ? req.body.formdata : undefined;
     if (data) {
@@ -189,22 +210,22 @@ module.exports = {
       return res.json(context);
   },
   tweets_from_user: function (req, res){
-    /* 
-      user
+    /*
+      Requisitos: Estar logado
+      Paramêtros: user
+      Saida: Lista de tweets do usuário passado como parâmetro
+
+      Busca todos os posts do usuário passado como parâmetro e os retorna numa lista 
     */
     var context = {};
     context.status = 'error';
 
-    //console.log(req.body);
 
     var data = (req.body) ? req.body : undefined;
-    console.log(data);
     if (data) {
       try {
         User.findOne({"username": data.user}).exec(function(err, result){
-          console.log("aqui");
           if(err) throw err;
-          console.log(result);
           Tweet.find({user: result.id}).populate('user').populate('retweet').sort('createdAt ASC').exec(function(err,result) {
             if(err) throw err;
             context.result = result;
@@ -223,12 +244,15 @@ module.exports = {
 
   delete_tweet: function (req,res){
     /*
-      id
+      Requisitos: Estar logado
+      Paramêtros: id
+      Saida: -
+
+      Deleta o tweet de "id", passado como parâmetro. O tweet deve pertencer ao usuário logado. 
     */
     var context = {};
     context.status = 'error';
 
-    console.log(req.body);
 
     var data = (req.body.formdata) ? req.body.formdata : undefined;
     if (data) {
@@ -256,13 +280,16 @@ module.exports = {
   //impact = (número total de replicações * 5) + (número total delikes * 3) - número total de dislikes
   tweet_top20: function (req,res){
     /*
-      date_ini
-      date_end
+      Requisitos: Estar logado
+      Paramêtros: date_ini, date_end
+      Saida: Lista dos top 20 tweets mais impactantes
+
+      Busca no sistema os top 20 tweets mais impactantes baseado na seguinte equação:
+        impact = (número total de replicações * 5) + (número total delikes * 3) - número total de dislikes
     */
     var context = {};
     context.status = 'error';
 
-    //console.log(req.body);
 
     var initialize_values = function (tweet_set) {
       for(var i = 0; i < tweet_set.length; i++){
@@ -317,13 +344,11 @@ module.exports = {
         if(!data.date_end){
           data.date_end = new Date;
         }
-        console.log(data.date_ini);
         Tweet.find({createdAt: {'>=': new Date(data.date_ini), '<=': new Date(data.date_end)} }).populate("reactions").populate("user").populate("retweet").exec(function(err, tweet_set){
           if(err) throw err;
           
           if(tweet_set){
             tweet_set = initialize_values(tweet_set);
-            //console.log(tweet_set.length);
             for(var i = 0; i < tweet_set.length; i++){
               tweet_set[i].number_likes = likes_sum(tweet_set[i]);
               tweet_set[i].number_dislikes = dislikes_sum(tweet_set[i]);
@@ -337,7 +362,6 @@ module.exports = {
               return b.impact-a.impact;
             }).slice(0, 20);
 
-            console.log(context.response);
             context.status = 'success';
             return res.json(context);
           }

@@ -17,8 +17,11 @@ module.exports = {
 
   login: function(req, res) {
     /*
-      username
-      password
+      Requisitos: -
+      Paramêtros: username, password
+      Saida: -
+
+      Realiza a autenticação do usuário passado como parâmetro. A senha oviamente deve ser a cadastrada.
     */
     passport.authenticate('local', function(err, user, info) {
       if (err || !user) {
@@ -39,6 +42,13 @@ module.exports = {
   },
 
   logout: function(req, res) {
+    /*
+      Requisitos: Estar logado
+      Paramêtros: -
+      Saida: -
+
+      Realiza o logout do usuário logado, é retorna para o início.
+    */
     req.logout();
     res.redirect('/');
   }

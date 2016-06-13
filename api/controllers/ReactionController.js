@@ -8,8 +8,13 @@
 module.exports = {
   set_reaction: function (req, res) {
     /*
-      tweet
-      rate
+      Requisitos: Estar logado
+      Paramêtros: tweet, rate
+      Saida: -
+
+      Cria uma reaction para o usuário logado para um tweet passado como parâmetro.
+      Para rate = 1, o reaction é positivo.
+      Para rate = 0, o reaction é negativo.
     */
     var context = {};
     context.status = 'error';
@@ -56,8 +61,11 @@ module.exports = {
 
   my_reaction: function (req, res) {
     /*
-      tweet
-      user
+      Requisitos: Estar logado
+      Paramêtros: tweet
+      Saida: Retorna uma reaction
+
+      Busca para um "tweet" passado como parâmetro, o reaction do usuário logado.
     */
     var context = {};
     context.status = 'error';
@@ -69,7 +77,6 @@ module.exports = {
 
         Reaction.findOne({where: {user: data.user, tweet: data.id}}).exec(function(err, found){
           context.found = found;
-          console.log(found);
           if(err) throw err;
             context.status = 'success';
             return res.json(context);

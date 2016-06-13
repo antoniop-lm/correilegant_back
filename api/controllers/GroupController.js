@@ -163,6 +163,34 @@
 	    } else return res.json(context);
   	},
 
+  	details_name: function (req, res) {
+      /* 
+		Requisitos: Estar logado
+		Parametros: nome do grupo
+		Saída: -
+		
+		Retorna dados do grupo
+		*/
+      /*
+        name
+      */
+      var context = {};
+      context.status = 'error';
+
+      var data = req.param("id") ? req.param("id") : undefined;
+      console.log(data);
+      if (data) {
+          try {
+            Group.findOne({"name": data}).populate("members").populate("owner").exec(function(err, result){
+              if(err) throw err;
+              context.result = result;
+            context.status = 'success';
+            return res.json(context);
+            });
+          } catch (err) {return res.json(context);}
+      } else return res.json(context);
+    },
+
   	delete_group: function(req,res) {
   		/* 
 		Requisitos: Estar logado

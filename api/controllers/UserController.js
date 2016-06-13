@@ -109,8 +109,6 @@ module.exports = {
     if (data) {
       try {
         data.birthday = new Date(data.birthday);
-
-
         req.file('image').upload({
             // don't allow the total upload size to exceed ~5MB
             maxBytes: 5000000
